@@ -68,7 +68,9 @@
             android:layout_centerHorizontal="true"
             android:textSize="16sp"/>
 
-        <Button
+
+
+        <ImageButton
             android:id="@+id/teacherDeleteButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -76,10 +78,8 @@
             android:layout_marginTop="0dp"
             android:layout_marginEnd="0dp"
             android:background="@drawable/delete_button"
-            android:text="D"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="18dp"/>
+            android:src="@drawable/ic_delete"/>
+
 
     </RelativeLayout>
 
