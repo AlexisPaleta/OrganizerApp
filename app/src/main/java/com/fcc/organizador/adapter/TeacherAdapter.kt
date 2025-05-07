@@ -6,7 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fcc.organizador.R
 import com.fcc.organizador.Teacher
 
-class TeacherAdapter(private val teacherList: List<Teacher>): RecyclerView.Adapter<TeacherViewHolder>() {
+class TeacherAdapter(
+    private val teacherList: List<Teacher>,
+    private val onClickListener: (Teacher) -> Unit,
+    private val onClickDelete:(Int) -> Unit
+): RecyclerView.Adapter<TeacherViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TeacherViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -19,7 +23,7 @@ class TeacherAdapter(private val teacherList: List<Teacher>): RecyclerView.Adapt
 
     override fun onBindViewHolder(holder: TeacherViewHolder, position: Int) {
         val item = teacherList[position]
-        holder.render(item)
+        holder.render(item, onClickListener, onClickDelete)
     }
 
 

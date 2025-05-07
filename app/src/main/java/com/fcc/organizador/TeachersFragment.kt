@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fcc.organizador.adapter.TeacherAdapter
@@ -26,6 +28,9 @@ class TeachersFragment : Fragment() {
     private var param2: String? = null
     private var _binding: FragmentTeachersBinding? = null
     private val binding get() = _binding!!
+    private var teacherMutableList: MutableList<Teacher> = TeacherProvider.teachersList.toMutableList()
+    private lateinit var adapter: TeacherAdapter
+    private lateinit var llmanager: LinearLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +42,8 @@ class TeachersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.addTeacherFloatingButton.setOnClickListener { createTeacher() }
+        llmanager = LinearLayoutManager(requireContext())
         initRecyclerView()
     }
 
@@ -54,9 +61,34 @@ class TeachersFragment : Fragment() {
     }
 
     private fun initRecyclerView(){
+        adapter = TeacherAdapter(
+            teacherList = teacherMutableList,
+            onClickListener = { teacher -> onItemSelected(teacher) },
+            onClickDelete = { position -> onDeletedItem(position) }
+        )
+
+        val decoration = DividerItemDecoration(requireContext(), llmanager.orientation)
         val recyclerView = binding.recyclerTeachers
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = TeacherAdapter(TeacherProvider.teachersList)
+
+        recyclerView.layoutManager = llmanager
+        recyclerView.adapter = adapter
+        binding.recyclerTeachers.addItemDecoration(decoration)
+    }
+
+    private fun onItemSelected(teacher: Teacher){
+        Toast.makeText(requireContext(), teacher.name, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun onDeletedItem(position: Int){
+        teacherMutableList.removeAt(position)
+        adapter.notifyItemRemoved(position)
+    }
+
+    private fun createTeacher() {
+        val teacher = Teacher("Unknown", "111-12", "1234567890", "?????")
+        teacherMutableList.add(teacher)
+        adapter.notifyItemInserted(teacherMutableList.size - 1)
+        llmanager.scrollToPositionWithOffset(teacherMutableList.size - 1, 10)
     }
 
     companion object {
