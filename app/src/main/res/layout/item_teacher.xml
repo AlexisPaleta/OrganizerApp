@@ -32,7 +32,9 @@
             android:textStyle="bold"
             android:layout_toEndOf="@id/teacherImage"
             android:layout_alignParentTop="true"
-            android:textSize="30sp"/>
+            android:textSize="22sp"
+            android:maxLength="12"
+            android:ellipsize="end"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -77,9 +79,8 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="0dp"
             android:layout_marginEnd="0dp"
-            android:background="@drawable/delete_button"
-            android:src="@drawable/ic_delete"/>
-
+            android:src="@drawable/ic_delete"
+            android:background="@drawable/delete_button"/>
 
     </RelativeLayout>
 

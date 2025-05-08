@@ -6,9 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.fcc.organizador.adapter.TeacherAdapter
 import com.fcc.organizador.databinding.FragmentTeachersBinding
 
@@ -31,6 +32,7 @@ class TeachersFragment : Fragment() {
     private var teacherMutableList: MutableList<Teacher> = TeacherProvider.teachersList.toMutableList()
     private lateinit var adapter: TeacherAdapter
     private lateinit var llmanager: LinearLayoutManager
+    private lateinit var teacherViewModel: TeacherViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,10 +40,21 @@ class TeachersFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        teacherViewModel = ViewModelProvider(requireActivity()).get(TeacherViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val teacherAddedObserver = Observer<Teacher?>{ teacher ->
+            if (teacher!=null){
+                addTeacher(teacher)
+                teacherViewModel.teacherAdded()
+            }
+        }
+
+        teacherViewModel.getTeacher().observe(viewLifecycleOwner, teacherAddedObserver)
+
         binding.addTeacherFloatingButton.setOnClickListener { createTeacher() }
         llmanager = LinearLayoutManager(requireContext())
         initRecyclerView()
@@ -85,11 +98,18 @@ class TeachersFragment : Fragment() {
     }
 
     private fun createTeacher() {
-        val teacher = Teacher("Unknown", "111-12", "1234567890", "?????")
+        val dialog = FullScreenDialogTeacherFragment.newInstance()
+        dialog.show(parentFragmentManager, "AddTeacherDialog")
+    }
+
+    private fun addTeacher(teacher: Teacher) {
         teacherMutableList.add(teacher)
         adapter.notifyItemInserted(teacherMutableList.size - 1)
         llmanager.scrollToPositionWithOffset(teacherMutableList.size - 1, 10)
+
+        Toast.makeText(requireContext(), "${teacher.name} agregado", Toast.LENGTH_SHORT).show()
     }
+
 
     companion object {
         /**
