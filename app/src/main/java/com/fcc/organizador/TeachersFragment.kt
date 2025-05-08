@@ -1,5 +1,6 @@
 package com.fcc.organizador
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,9 +10,12 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.fcc.organizador.adapter.TeacherAdapter
 import com.fcc.organizador.databinding.FragmentTeachersBinding
+import com.google.android.material.snackbar.Snackbar
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,6 +62,49 @@ class TeachersFragment : Fragment() {
         binding.addTeacherFloatingButton.setOnClickListener { createTeacher() }
         llmanager = LinearLayoutManager(requireContext())
         initRecyclerView()
+
+        val itemTouchHelperCallback = object : ItemTouchHelper.Callback(){// This is to permit move the teachers list, change the order
+            //and delete when the element swipes to the left
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                return makeMovementFlags(ItemTouchHelper.UP.or(ItemTouchHelper.DOWN), ItemTouchHelper.LEFT.or(ItemTouchHelper.RIGHT) )
+            }
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val initialPosition = viewHolder.adapterPosition
+                val finalPosition = target.adapterPosition
+                changeTeacherPosition(initialPosition, finalPosition)
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+                Toast.makeText(requireContext(), direction.toString(), Toast.LENGTH_SHORT).show()
+
+                val position = viewHolder.adapterPosition
+                val deletedTeacher = teacherMutableList[position]
+                onDeletedItem(position)
+
+                val snackbar = Snackbar.make(binding.root, "Maestro eliminado", Snackbar.LENGTH_LONG)
+                snackbar.setAction("Deshacer") {
+                    restoreTeacher(position, deletedTeacher)
+                }
+                snackbar.setActionTextColor(Color.YELLOW)
+                snackbar.show()
+
+            }
+
+        }
+
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(binding.recyclerTeachers)
+
     }
 
     override fun onCreateView(
@@ -108,6 +155,18 @@ class TeachersFragment : Fragment() {
         llmanager.scrollToPositionWithOffset(teacherMutableList.size - 1, 10)
 
         Toast.makeText(requireContext(), "${teacher.name} agregado", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun restoreTeacher(position: Int, teacher: Teacher){
+        teacherMutableList.add(position, teacher)
+        adapter.notifyItemInserted(position)
+    }
+
+    private fun changeTeacherPosition(initialPosition: Int, finalPosition: Int){
+        val teacher = teacherMutableList[initialPosition]
+        teacherMutableList.removeAt(initialPosition)
+        teacherMutableList.add(finalPosition, teacher)
+        adapter.notifyItemMoved(initialPosition, finalPosition)
     }
 
 
