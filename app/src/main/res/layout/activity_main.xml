@@ -9,12 +9,12 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
-        android:name="com.fcc.organizador.TeachersFragment"
+        android:name="com.fcc.organizador.schedule.ScheduleFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/fragment_teachers" />
+        tools:layout="@layout/fragment_schedule" />
 </androidx.constraintlayout.widget.ConstraintLayout>
