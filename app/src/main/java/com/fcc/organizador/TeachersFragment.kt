@@ -242,6 +242,7 @@ class TeachersFragment : Fragment() {
         val editingTeacher = teacherMutableList[position]
         teacherViewModel.setEditing(true)
         teacherViewModel.setEditingTeacher(editingTeacher)
+        teacherViewModel.setEditedPosition(position)
 
         val dialog = FullScreenDialogTeacherFragment.newInstance()
         dialog.show(parentFragmentManager, "AddTeacherDialog")
@@ -250,15 +251,7 @@ class TeachersFragment : Fragment() {
     }
 
     private fun editedTeacher(teacher: Teacher){
-        var position = -1
-        for ((index, t) in teacherMutableList.withIndex()){
-            if (t.name == teacher.name){
-                position = index
-            }
-        }
-        if (position == -1){
-            Toast.makeText(requireContext(), "ERROR MAESTRO NO ENCONTRADO", Toast.LENGTH_SHORT).show()
-        }
+        val position = teacherViewModel.getEditedPosition()
 
         teacherMutableList[position] = teacher
         adapter.notifyItemChanged(position)
