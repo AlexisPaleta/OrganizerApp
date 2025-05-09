@@ -6,12 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.fcc.organizador.R
-import com.fcc.organizador.Teacher
-import com.fcc.organizador.adapter.TeacherAdapter
 import com.fcc.organizador.databinding.FragmentScheduleBinding
 import com.fcc.organizador.schedule.adapter.ScheduleAdapter
 
@@ -31,7 +27,7 @@ class ScheduleFragment : Fragment() {
     private var param2: String? = null
     private var _binding: FragmentScheduleBinding? = null
     private val binding get() = _binding!!
-    private var teacherMutableList: MutableList<Schedule> = ScheduleProvider.scheduleList.toMutableList()
+    private var scheduleMutableList: MutableList<Schedule> = ScheduleProvider.scheduleList.toMutableList()
     private lateinit var adapter: ScheduleAdapter
     private lateinit var glmanager: LinearLayoutManager
 
@@ -54,13 +50,15 @@ class ScheduleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        glmanager = GridLayoutManager(requireContext(),3)
+        glmanager = GridLayoutManager(requireContext(),4)
         initRecyclerView()
+        binding.btnAddRow.setOnClickListener { addRowSection() }
+        binding.btnDeleteRow.setOnClickListener { deleteRowSection() }
     }
 
     private fun initRecyclerView(){
         adapter = ScheduleAdapter(
-            scheduleList = teacherMutableList,
+            scheduleList = scheduleMutableList,
             onClickListener = { schedule -> onItemSelected(schedule) }
         )
 
@@ -68,6 +66,31 @@ class ScheduleFragment : Fragment() {
 
         recyclerView.layoutManager = glmanager
         recyclerView.adapter = adapter
+    }
+
+    private fun addRowSection(){
+        val startPosition = scheduleMutableList.size
+        var cellSchedule: Schedule
+        for (i in 1..3){
+            cellSchedule = Schedule("Click para editar", 1)
+            scheduleMutableList.add(cellSchedule)
+        }
+        adapter.notifyItemRangeInserted(startPosition,3)
+    }
+
+    private fun deleteRowSection(){
+
+        if (scheduleMutableList.size <= 3){
+            Toast.makeText(requireContext(), "To small list", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val rangePositions = scheduleMutableList.size - 3
+        for (i in 1..3){
+            scheduleMutableList.removeAt(scheduleMutableList.size - 1)
+        }
+        adapter.notifyItemRangeRemoved(rangePositions,3)
+
     }
 
     private fun onItemSelected(schedule: Schedule){
