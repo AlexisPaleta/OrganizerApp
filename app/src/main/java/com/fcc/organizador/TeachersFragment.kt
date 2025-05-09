@@ -53,15 +53,27 @@ class TeachersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val teacherAddedObserver = Observer<Teacher?>{ teacher ->
-            if (teacher!=null){
+            if (teacher!=null && !teacherViewModel.getEditing()){
                 addTeacher(teacher)
                 teacherViewModel.teacherAdded()
             }
         }
 
-        teacherViewModel.getTeacher().observe(viewLifecycleOwner, teacherAddedObserver)
+        teacherViewModel.getNewTeacher().observe(viewLifecycleOwner, teacherAddedObserver)
 
         binding.addTeacherFloatingButton.setOnClickListener { createTeacher() }
+
+        val teacherEditedObserver = Observer<Teacher?>{teacher ->
+            if ( teacher!=null && teacherViewModel.getEditing()){
+                editedTeacher(teacher)
+                teacherViewModel.teacherEdited()
+            }
+
+
+        }
+
+        teacherViewModel.getEditTeacher().observe(viewLifecycleOwner, teacherEditedObserver)
+
         llmanager = LinearLayoutManager(requireContext())
         initRecyclerView()
 
@@ -172,6 +184,7 @@ class TeachersFragment : Fragment() {
     private fun createTeacher() {
         val dialog = FullScreenDialogTeacherFragment.newInstance()
         dialog.show(parentFragmentManager, "AddTeacherDialog")
+        teacherViewModel.setEditing(false)
     }
 
     private fun addTeacher(teacher: Teacher) {
@@ -216,6 +229,40 @@ class TeachersFragment : Fragment() {
 
     private fun editFunction(position: Int){
         Toast.makeText(requireContext(), "Edit Function", Toast.LENGTH_SHORT).show()
+        adapter.notifyItemChanged(position)
+        binding.recyclerTeachers.post { //This is to fix when a teacher is restored because if the item is not reDrawn, the item will
+            //be an empty card
+            val holder = binding.recyclerTeachers.findViewHolderForAdapterPosition(position)
+            holder?.let {
+                TeacherViewHolder(it.itemView).resetSwipePosition()
+            }
+        }
+        llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
+
+        val editingTeacher = teacherMutableList[position]
+        teacherViewModel.setEditing(true)
+        teacherViewModel.setEditingTeacher(editingTeacher)
+
+        val dialog = FullScreenDialogTeacherFragment.newInstance()
+        dialog.show(parentFragmentManager, "AddTeacherDialog")
+
+
+    }
+
+    private fun editedTeacher(teacher: Teacher){
+        var position = -1
+        for ((index, t) in teacherMutableList.withIndex()){
+            if (t.name == teacher.name){
+                position = index
+            }
+        }
+        if (position == -1){
+            Toast.makeText(requireContext(), "ERROR MAESTRO NO ENCONTRADO", Toast.LENGTH_SHORT).show()
+        }
+
+        teacherMutableList[position] = teacher
+        adapter.notifyItemChanged(position)
+        llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
     }
 
 
