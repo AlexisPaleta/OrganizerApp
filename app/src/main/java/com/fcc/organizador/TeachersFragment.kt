@@ -1,5 +1,6 @@
 package com.fcc.organizador
 
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fcc.organizador.adapter.TeacherAdapter
+import com.fcc.organizador.adapter.TeacherViewHolder
 import com.fcc.organizador.databinding.FragmentTeachersBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -44,7 +46,7 @@ class TeachersFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        teacherViewModel = ViewModelProvider(requireActivity()).get(TeacherViewModel::class.java)
+        teacherViewModel = ViewModelProvider(requireActivity())[TeacherViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,20 +86,43 @@ class TeachersFragment : Fragment() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
                 Toast.makeText(requireContext(), direction.toString(), Toast.LENGTH_SHORT).show()
-
                 val position = viewHolder.adapterPosition
-                val deletedTeacher = teacherMutableList[position]
-                onDeletedItem(position)
 
-                val snackbar = Snackbar.make(binding.root, "Maestro eliminado", Snackbar.LENGTH_LONG)
-                snackbar.setAction("Deshacer") {
-                    restoreTeacher(position, deletedTeacher)
+                when (direction){
+                    ItemTouchHelper.LEFT ->{
+                        deleteFunction(position)
+                    }
+                    ItemTouchHelper.RIGHT ->{
+                        editFunction(position)
+                    }
                 }
-                snackbar.setActionTextColor(Color.YELLOW)
-                snackbar.show()
+            }
 
+            override fun onChildDraw(
+                canvas: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    TeacherViewHolder.handleSwipe(TeacherViewHolder(viewHolder.itemView), dX)
+                } else {
+                    super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                }
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                //Reset position when item is released
+                viewHolder.itemView.translationX = 0f
+                TeacherViewHolder(viewHolder.itemView).apply {
+                    editBackground.visibility = View.GONE
+                    deleteBackground.visibility = View.GONE
+                }
             }
 
         }
@@ -160,6 +185,15 @@ class TeachersFragment : Fragment() {
     private fun restoreTeacher(position: Int, teacher: Teacher){
         teacherMutableList.add(position, teacher)
         adapter.notifyItemInserted(position)
+
+        binding.recyclerTeachers.post { //This is to fix when a teacher is restored because if the item is not reDrawn, the item will
+            //be an empty card
+            val holder = binding.recyclerTeachers.findViewHolderForAdapterPosition(position)
+            holder?.let {
+                TeacherViewHolder(it.itemView).resetSwipePosition()
+            }
+        }
+        llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
     }
 
     private fun changeTeacherPosition(initialPosition: Int, finalPosition: Int){
@@ -167,6 +201,21 @@ class TeachersFragment : Fragment() {
         teacherMutableList.removeAt(initialPosition)
         teacherMutableList.add(finalPosition, teacher)
         adapter.notifyItemMoved(initialPosition, finalPosition)
+    }
+
+    private fun deleteFunction(position: Int){
+        val deletedTeacher = teacherMutableList[position]
+        onDeletedItem(position)
+        val snackbar = Snackbar.make(binding.root, "Maestro eliminado", Snackbar.LENGTH_LONG)
+        snackbar.setAction("Deshacer") {
+            restoreTeacher(position, deletedTeacher)
+        }
+        snackbar.setActionTextColor(Color.YELLOW)
+        snackbar.show()
+    }
+
+    private fun editFunction(position: Int){
+        Toast.makeText(requireContext(), "Edit Function", Toast.LENGTH_SHORT).show()
     }
 
 
