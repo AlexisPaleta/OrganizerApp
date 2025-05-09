@@ -11,4 +11,11 @@
     <string name="add_teacher">Agregar Nuevo Profesor</string>
     <string name="cancel">Cancelar</string>
     <string name="save">Guardar</string>
+    <string name="lunes">Lunes</string>
+    <string name="martes">Martes</string>
+    <string name="miercoles">Miércoles</string>
+    <string name="jueves">Jueves</string>
+    <string name="viernes">Viernes</string>
+    <string name="sabado">Sábado</string>
+    <string name="domingo">Domingo</string>
 </resources>

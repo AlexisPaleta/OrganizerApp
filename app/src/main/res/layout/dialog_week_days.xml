@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkboxMonday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="#0075ff"
+        android:text="@string/lunes" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkboxTuesday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="#0075ff"
+        android:text="@string/martes" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkboxWednesday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="#0075ff"
+        android:text="@string/miercoles" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkboxThursday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="#0075ff"
+        android:text="@string/jueves" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkboxFriday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="#0075ff"
+        android:text="@string/viernes" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkboxSaturday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="#0075ff"
+        android:text="@string/sabado" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkboxSunday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="#0075ff"
+        android:text="@string/domingo" />
+</LinearLayout>

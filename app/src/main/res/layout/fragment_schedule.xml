@@ -54,7 +54,7 @@
         android:id="@+id/btnEditColumn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Editar folumnas"
+        android:text="Dias de la semana"
         app:layout_constraintTop_toTopOf="@id/btnAddRow"
         app:layout_constraintStart_toEndOf="@id/btnAddRow"
         app:layout_constraintEnd_toEndOf="parent"/>
