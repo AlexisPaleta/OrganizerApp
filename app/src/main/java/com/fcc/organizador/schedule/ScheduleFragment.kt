@@ -56,11 +56,10 @@ class ScheduleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        glmanager = GridLayoutManager(requireContext(),4)
+        glmanager = GridLayoutManager(requireContext(),scheduleViewModel.getColumnsCount())
         initRecyclerView()
         binding.btnAddRow.setOnClickListener { addRowSection() }
         binding.btnDeleteRow.setOnClickListener { deleteRowSection() }
-        binding.btnEditColumn.setOnClickListener { editWeekdays() }
     }
 
     private fun initRecyclerView(){
@@ -79,9 +78,11 @@ class ScheduleFragment : Fragment() {
         val columnsCount = scheduleViewModel.getColumnsCount()
         val startPosition = scheduleMutableList.size
         var cellSchedule: Schedule
+        var newPosition = startPosition
         for (i in 1..columnsCount){
-            cellSchedule = Schedule("Click para editar", 1)
+            cellSchedule = Schedule("Click para editar", 1, newPosition)
             scheduleMutableList.add(cellSchedule)
+            newPosition++
         }
         adapter.notifyItemRangeInserted(startPosition, columnsCount)
     }
@@ -102,39 +103,8 @@ class ScheduleFragment : Fragment() {
 
     }
 
-    private fun editWeekdays(){
-        val dialogView = layoutInflater.inflate(R.layout.dialog_week_days, null)
-
-        val cbMonday = dialogView.findViewById<MaterialCheckBox>(R.id.checkboxMonday)
-        val cbTuesday = dialogView.findViewById<MaterialCheckBox>(R.id.checkboxTuesday)
-        val cbWednesday = dialogView.findViewById<MaterialCheckBox>(R.id.checkboxWednesday)
-        val cbThursday = dialogView.findViewById<MaterialCheckBox>(R.id.checkboxThursday)
-        val cbFriday = dialogView.findViewById<MaterialCheckBox>(R.id.checkboxFriday)
-        val cbSaturday = dialogView.findViewById<MaterialCheckBox>(R.id.checkboxSaturday)
-        val cbSunday= dialogView.findViewById<MaterialCheckBox>(R.id.checkboxSunday)
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Select weekdays")
-            .setView(dialogView)
-            .setPositiveButton("Accept") { dialog, _ ->
-                val selected = mutableListOf<String>()
-                if (cbMonday.isChecked) selected.add("Monday")
-                if (cbTuesday.isChecked) selected.add("Tuesday")
-                if (cbWednesday.isChecked) selected.add("Wednesday")
-                if (cbThursday.isChecked) selected.add("Thursday")
-                if (cbFriday.isChecked) selected.add("Friday")
-                if (cbSaturday.isChecked) selected.add("Saturday")
-                if (cbSunday.isChecked) selected.add("Sunday")
-
-                Toast.makeText(requireContext(), "Selected: ${selected.joinToString()}", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
     private fun onItemSelected(schedule: Schedule){
-        Toast.makeText(requireContext(), schedule.text, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), schedule.toString(), Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

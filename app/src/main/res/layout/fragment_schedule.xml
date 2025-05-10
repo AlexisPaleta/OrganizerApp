@@ -47,26 +47,16 @@
         android:text="Agregar fila"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnEditColumn"
+        app:layout_constraintEnd_toStartOf="@+id/btnDeleteRow"
         android:layout_marginBottom="20dp"/>
-
-    <Button
-        android:id="@+id/btnEditColumn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dias de la semana"
-        app:layout_constraintTop_toTopOf="@id/btnAddRow"
-        app:layout_constraintStart_toEndOf="@id/btnAddRow"
-        app:layout_constraintEnd_toEndOf="parent"/>
 
     <Button
         android:id="@+id/btnDeleteRow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Eliminar fila"
-        app:layout_constraintBottom_toTopOf="@id/btnAddRow"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnAddRow"
+        app:layout_constraintStart_toEndOf="@id/btnAddRow"
         app:layout_constraintEnd_toEndOf="parent"/>
 
 
