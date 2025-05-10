@@ -1,10 +1,13 @@
 package com.fcc.organizador.schedule
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -12,8 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.fcc.organizador.R
 import com.fcc.organizador.databinding.FragmentScheduleBinding
 import com.fcc.organizador.schedule.adapter.ScheduleAdapter
-import com.google.android.material.checkbox.MaterialCheckBox
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.skydoves.colorpickerview.ColorPickerDialog
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -80,7 +84,7 @@ class ScheduleFragment : Fragment() {
         var cellSchedule: Schedule
         var newPosition = startPosition
         for (i in 1..columnsCount){
-            cellSchedule = Schedule("Click para editar", 1, newPosition)
+            cellSchedule = Schedule("Click para editar", Color.GRAY, newPosition)
             scheduleMutableList.add(cellSchedule)
             newPosition++
         }
@@ -105,6 +109,51 @@ class ScheduleFragment : Fragment() {
 
     private fun onItemSelected(schedule: Schedule){
         Toast.makeText(requireContext(), schedule.toString(), Toast.LENGTH_SHORT).show()
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_config_schedule, null)
+        val editText = dialogView.findViewById<EditText>(R.id.editTextActivity)
+        val viewColor = dialogView.findViewById<View>(R.id.viewColorPreview)
+        val btnPickColor = dialogView.findViewById<Button>(R.id.btnPickColor)
+
+        var selectedColor: Int = schedule.color //initial color
+        if (schedule.text == "Click para editar"){
+            editText.setText("")
+        }else{
+            editText.setText(schedule.text)
+        }
+
+        viewColor.setBackgroundColor(selectedColor)
+
+        btnPickColor.setOnClickListener {
+            ColorPickerDialog.Builder(requireContext())
+                .setTitle("Select a color")
+                .setPreferenceName("ColorPickerDialog")
+                .setPositiveButton("Accept", ColorEnvelopeListener { envelope, _ ->
+                    selectedColor = envelope.color
+                    viewColor.setBackgroundColor(selectedColor)
+                })
+                .setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.dismiss() }
+                .attachAlphaSlideBar(true) //
+                .attachBrightnessSlideBar(true)
+                .show()
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
+            .setTitle("Edit activity")
+            .setPositiveButton("Accept") { dialog, _ ->
+                var texto = editText.text.toString()
+                if (texto == ""){
+                    texto = "Click para editar"
+                }
+                schedule.text = texto
+                schedule.color = selectedColor
+                adapter.notifyItemChanged(schedule.position)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+
     }
 
     override fun onDestroyView() {

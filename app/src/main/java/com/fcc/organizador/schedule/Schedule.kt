@@ -1,7 +1,7 @@
 package com.fcc.organizador.schedule
 
 data class Schedule(
-    val text: String,
-    val color: Int,
+    var text: String,
+    var color: Int,
     val position: Int
 )
