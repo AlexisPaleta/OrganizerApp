@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fcc.organizador.R
 import com.fcc.organizador.databinding.FragmentScheduleBinding
+import com.fcc.organizador.db.AppDatabaseHelper
 import com.fcc.organizador.schedule.adapter.ScheduleAdapter
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -35,10 +36,11 @@ class ScheduleFragment : Fragment() {
     private var param2: String? = null
     private var _binding: FragmentScheduleBinding? = null
     private val binding get() = _binding!!
-    private var scheduleMutableList: MutableList<Schedule> = ScheduleProvider.scheduleList.toMutableList()
+    private lateinit var scheduleMutableList: MutableList<Schedule>
     private lateinit var adapter: ScheduleAdapter
     private lateinit var glmanager: LinearLayoutManager
     private lateinit var scheduleViewModel: ScheduleViewModel
+    private lateinit var db: AppDatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,7 @@ class ScheduleFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         scheduleViewModel = ViewModelProvider(requireActivity())[ScheduleViewModel::class.java]
+
     }
 
     override fun onCreateView(
@@ -59,6 +62,9 @@ class ScheduleFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        db = AppDatabaseHelper(requireContext())
+        scheduleMutableList = db.getAllScheduleCells() //Initialize schedule mutable list
 
         glmanager = GridLayoutManager(requireContext(),scheduleViewModel.getColumnsCount())
         initRecyclerView()
@@ -83,9 +89,11 @@ class ScheduleFragment : Fragment() {
         val startPosition = scheduleMutableList.size
         var cellSchedule: Schedule
         var newPosition = startPosition
+
         for (i in 1..columnsCount){
             cellSchedule = Schedule("Click para editar", Color.GRAY, newPosition)
             scheduleMutableList.add(cellSchedule)
+            db.insertScheduleCell(cellSchedule)
             newPosition++
         }
         adapter.notifyItemRangeInserted(startPosition, columnsCount)
@@ -101,7 +109,9 @@ class ScheduleFragment : Fragment() {
 
         val rangePositions = scheduleMutableList.size - columnsCount
         for (i in 1..columnsCount){
-            scheduleMutableList.removeAt(scheduleMutableList.size - 1)
+            val removingPosition = scheduleMutableList.size - 1
+            scheduleMutableList.removeAt(removingPosition)
+            db.deleteScheduleCell(removingPosition)
         }
         adapter.notifyItemRangeRemoved(rangePositions, columnsCount)
 
@@ -116,10 +126,10 @@ class ScheduleFragment : Fragment() {
         val btnPickColor = dialogView.findViewById<Button>(R.id.btnPickColor)
 
         var selectedColor: Int = schedule.color //initial color
-        if (schedule.text == "Click para editar"){
+        if (schedule.content == "Click para editar"){
             editText.setText("")
         }else{
-            editText.setText(schedule.text)
+            editText.setText(schedule.content)
         }
 
         viewColor.setBackgroundColor(selectedColor)
@@ -142,12 +152,14 @@ class ScheduleFragment : Fragment() {
             .setView(dialogView)
             .setTitle("Edit activity")
             .setPositiveButton("Accept") { dialog, _ ->
-                var texto = editText.text.toString()
-                if (texto == ""){
-                    texto = "Click para editar"
+                var content = editText.text.toString()
+                if (content == ""){
+                    content = "Click para editar"
                 }
-                schedule.text = texto
+                schedule.content = content
                 schedule.color = selectedColor
+                val updatedSchedule = Schedule(content, selectedColor, schedule.position)
+                db.updateScheduleCell(updatedSchedule)
                 adapter.notifyItemChanged(schedule.position)
                 dialog.dismiss()
             }

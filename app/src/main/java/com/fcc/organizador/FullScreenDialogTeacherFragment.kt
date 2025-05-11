@@ -38,7 +38,7 @@ class FullScreenDialogTeacherFragment: DialogFragment() {
         }
 
         binding.btnSave.setOnClickListener {
-            saveTeacherInfo(teacherViewModel.getEditing())
+            saveTeacherInfo(teacherViewModel.getEditing(), teacherViewModel.getTeacherListLastPosition() + 1)
         }
 
         binding.btnCancel.setOnClickListener { dismiss() }
@@ -48,21 +48,6 @@ class FullScreenDialogTeacherFragment: DialogFragment() {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    private fun addTeacherLogic(){
-        val name = binding.editTextName.text.toString().trim()
-        val cubicle = binding.editTextCubicle.text.toString().trim()
-        val email = binding.editTextMail.text.toString().trim()
-        val description = binding.editTextDescription.text.toString().trim()
-
-        if (validateInputs(name, cubicle, email, description)) {
-            val newTeacher = Teacher(name, cubicle, email, description)
-            teacherViewModel.setNewTeacher(newTeacher)
-            dismiss()
-        } else {
-            Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun fillOutTeacherInformation(){
@@ -75,18 +60,14 @@ class FullScreenDialogTeacherFragment: DialogFragment() {
         }
     }
 
-    private fun editTeacherLogic(){
-
-    }
-
-    private fun saveTeacherInfo(editing: Boolean){
+    private fun saveTeacherInfo(editing: Boolean, position: Int){
         val name = binding.editTextName.text.toString().trim()
         val cubicle = binding.editTextCubicle.text.toString().trim()
         val email = binding.editTextMail.text.toString().trim()
         val description = binding.editTextDescription.text.toString().trim()
 
         if (validateInputs(name, cubicle, email, description)) {
-            val newTeacher = Teacher(name, cubicle, email, description)
+            val newTeacher = Teacher(name, cubicle, email, description, position)
 
             if (!editing){
                 teacherViewModel.setNewTeacher(newTeacher)

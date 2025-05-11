@@ -11,6 +11,7 @@ class TeacherViewModel: ViewModel() {
     private var editTeacher:MutableLiveData<Teacher?> = MutableLiveData() //This MutableLiveData teacher is for the edit logic
     //an observer will be save the teacher value saved here
     private var editedPosition: Int = 0
+    private var teacherListLastPosition = 0
 
     fun getNewTeacher(): MutableLiveData<Teacher?>{
         return newTeacher
@@ -60,6 +61,14 @@ class TeacherViewModel: ViewModel() {
 
     fun setEditedPosition(position: Int){
         editedPosition = position
+    }
+
+    fun getTeacherListLastPosition(): Int{
+        return teacherListLastPosition
+    }
+
+    fun setTeacherListLastPosition(value: Int){
+        teacherListLastPosition = value
     }
 
 }

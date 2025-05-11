@@ -1,8 +1,9 @@
 package com.fcc.organizador
 
 data class Teacher (
-    val name:String,
-    val cubicle: String,
-    val contact: String,
-    val description: String
+    var name:String,
+    var cubicle: String,
+    var contact: String,
+    var description: String,
+    var position: Int
 )

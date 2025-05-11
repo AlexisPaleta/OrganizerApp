@@ -173,7 +173,7 @@ class TeachersFragment : Fragment() {
     }
 
     private fun onItemSelected(teacher: Teacher){
-        Toast.makeText(requireContext(), teacher.name, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), teacher.toString(), Toast.LENGTH_SHORT).show()
     }
 
     private fun onDeletedItem(position: Int){
@@ -185,6 +185,7 @@ class TeachersFragment : Fragment() {
         val dialog = FullScreenDialogTeacherFragment.newInstance()
         dialog.show(parentFragmentManager, "AddTeacherDialog")
         teacherViewModel.setEditing(false)
+        teacherViewModel.setTeacherListLastPosition(teacherMutableList.size - 1)
     }
 
     private fun addTeacher(teacher: Teacher) {
@@ -214,6 +215,7 @@ class TeachersFragment : Fragment() {
         teacherMutableList.removeAt(initialPosition)
         teacherMutableList.add(finalPosition, teacher)
         adapter.notifyItemMoved(initialPosition, finalPosition)
+        reorderTeachersPositions()
     }
 
     private fun deleteFunction(position: Int){
@@ -225,6 +227,7 @@ class TeachersFragment : Fragment() {
         }
         snackbar.setActionTextColor(Color.YELLOW)
         snackbar.show()
+        reorderTeachersPositions()
     }
 
     private fun editFunction(position: Int){
@@ -256,6 +259,12 @@ class TeachersFragment : Fragment() {
         teacherMutableList[position] = teacher
         adapter.notifyItemChanged(position)
         llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
+    }
+
+    private fun reorderTeachersPositions(){
+        for ((index,teacher) in teacherMutableList.withIndex()){
+            teacher.position = index
+        }
     }
 
 

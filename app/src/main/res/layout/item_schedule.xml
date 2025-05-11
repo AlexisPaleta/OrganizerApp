@@ -20,7 +20,7 @@
             android:text="Example text"
             android:textAlignment="center"
             android:gravity="center"
-            android:maxLength="20"
+            android:maxLength="25"
             android:textSize="18sp"
             android:background="#8d6"
             android:ellipsize="end"/>
