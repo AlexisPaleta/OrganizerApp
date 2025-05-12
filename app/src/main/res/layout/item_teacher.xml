@@ -5,83 +5,136 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/teacherCardItem"
     android:layout_margin="12dp"
-    app:cardBackgroundColor="#227C9D"
     app:cardCornerRadius="20dp"
-    app:cardElevation="6dp"
-    app:contentPadding="4dp">
-    
-    <RelativeLayout
+    app:cardElevation="6dp">
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:id="@+id/teacherImage"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="16dp"
-            android:background="#337"/>
-        
-        <TextView
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/editBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="#22f">
+
+            <ImageButton
+                android:id="@+id/icEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_edit"
+                android:background="#22f"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="Editar"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:layout_toEndOf="@+id/icEdit"
+                android:layout_marginLeft="5dp"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/deleteBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="#f23">
+
+            <ImageButton
+                android:id="@+id/icDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_delete"
+                android:background="#f23"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="Eliminar"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:layout_toStartOf="@+id/icDelete"
+                android:layout_marginEnd="5dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/foregroundView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Profesor"
-            android:textColor="@color/white"
-            android:id="@+id/teacherName"
-            android:textStyle="bold"
-            android:layout_toEndOf="@id/teacherImage"
-            android:layout_alignParentTop="true"
-            android:textSize="22sp"
-            android:maxLength="12"
-            android:ellipsize="end"/>
+            android:background="#227C9D"
+            android:visibility="visible"
+            android:padding="16dp">
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/teacherImage"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="16dp"
+                android:background="#337"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CCO1-112"
-            android:textColor="@color/white"
-            android:id="@+id/teacherCubicle"
-            android:textStyle="bold"
-            android:layout_toEndOf="@id/teacherImage"
-            android:layout_below="@id/teacherName"
-            android:textSize="16sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profesor"
+                android:textColor="@color/white"
+                android:id="@+id/teacherName"
+                android:textStyle="bold"
+                android:layout_toEndOf="@id/teacherImage"
+                android:layout_alignParentTop="true"
+                android:textSize="22sp"
+                android:maxLength="12"
+                android:ellipsize="end"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2223444799"
-            android:textColor="@color/white"
-            android:id="@+id/teacherContact"
-            android:textStyle="bold"
-            android:layout_toEndOf="@id/teacherImage"
-            android:layout_below="@id/teacherCubicle"
-            android:textSize="16sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CCO1-112"
+                android:textColor="@color/white"
+                android:id="@+id/teacherCubicle"
+                android:textStyle="bold"
+                android:layout_toEndOf="@id/teacherImage"
+                android:layout_below="@id/teacherName"
+                android:textSize="16sp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="The description is here"
-            android:textColor="@color/white"
-            android:id="@+id/teacherDescription"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:layout_below="@id/teacherImage"
-            android:layout_centerHorizontal="true"
-            android:textSize="16sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2223444799"
+                android:textColor="@color/white"
+                android:id="@+id/teacherContact"
+                android:textStyle="bold"
+                android:layout_toEndOf="@id/teacherImage"
+                android:layout_below="@id/teacherCubicle"
+                android:textSize="16sp"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="The description is here"
+                android:textColor="@color/white"
+                android:id="@+id/teacherDescription"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:layout_below="@id/teacherImage"
+                android:layout_centerHorizontal="true"
+                android:textSize="16sp"/>
 
+        </RelativeLayout>
 
-        <ImageButton
-            android:id="@+id/teacherDeleteButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="0dp"
-            android:src="@drawable/ic_delete"
-            android:background="@drawable/delete_button"/>
-
-    </RelativeLayout>
+    </FrameLayout>
 
 </androidx.cardview.widget.CardView>

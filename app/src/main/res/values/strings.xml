@@ -9,6 +9,15 @@
     <string name="email">Correo</string>
     <string name="description">Descripción</string>
     <string name="add_teacher">Agregar Nuevo Profesor</string>
+    <string name="edit_schedule">Personalizar celda</string>
     <string name="cancel">Cancelar</string>
     <string name="save">Guardar</string>
+    <string name="lunes">Lunes</string>
+    <string name="martes">Martes</string>
+    <string name="miercoles">Miércoles</string>
+    <string name="jueves">Jueves</string>
+    <string name="viernes">Viernes</string>
+    <string name="sabado">Sábado</string>
+    <string name="domingo">Domingo</string>
+    <string name="activity">Actividad</string>
 </resources>
