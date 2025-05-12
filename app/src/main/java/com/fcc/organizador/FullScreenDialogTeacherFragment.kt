@@ -8,11 +8,13 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.fcc.organizador.databinding.DialogTeacherBinding
+import com.fcc.organizador.db.AppDatabaseHelper
 
 class FullScreenDialogTeacherFragment: DialogFragment() {
     private var _binding: DialogTeacherBinding? = null
     private val binding get() = _binding!!
     private lateinit var teacherViewModel: TeacherViewModel
+    private lateinit var db: AppDatabaseHelper
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,12 +35,14 @@ class FullScreenDialogTeacherFragment: DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        db = AppDatabaseHelper(requireContext())
+
         if (teacherViewModel.getEditing()){ //If the dialog was called by the edit swipe option
             fillOutTeacherInformation()
         }
 
         binding.btnSave.setOnClickListener {
-            saveTeacherInfo(teacherViewModel.getEditing(), teacherViewModel.getTeacherListLastPosition() + 1)
+            saveTeacherInfo(teacherViewModel.getEditing())
         }
 
         binding.btnCancel.setOnClickListener { dismiss() }
@@ -60,13 +64,22 @@ class FullScreenDialogTeacherFragment: DialogFragment() {
         }
     }
 
-    private fun saveTeacherInfo(editing: Boolean, position: Int){
+    private fun saveTeacherInfo(editing: Boolean){
         val name = binding.editTextName.text.toString().trim()
         val cubicle = binding.editTextCubicle.text.toString().trim()
         val email = binding.editTextMail.text.toString().trim()
         val description = binding.editTextDescription.text.toString().trim()
+        var position: Int
+        if(!editing){
+            position = teacherViewModel.getTeacherListLastPosition() + 1 //assign the position
+            //with the value of the last teacher plus one
+        }else{
+            position = teacherViewModel.getEditedPosition() //maintain the the same position
+            //because the teacher will stay at the same position while editing, a new value is not
+            //needed
+        }
 
-        if (validateInputs(name, cubicle, email, description)) {
+        if (validateInputs(name, cubicle, email, description, editing)) {
             val newTeacher = Teacher(name, cubicle, email, description, position)
 
             if (!editing){
@@ -76,13 +89,22 @@ class FullScreenDialogTeacherFragment: DialogFragment() {
             }
 
             dismiss()
-        } else {
-            Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun validateInputs(vararg fields: String): Boolean {
-        return fields.all { it.isNotEmpty() }
+    private fun validateInputs(name: String, cubicle: String, email: String, description: String, editing: Boolean): Boolean {
+        if (!editing && db.teacherNameExists(name)){
+            Toast.makeText(context, "Ya hay un profesor con ese nombre, registra otro", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if ((name != "") && (cubicle != "") && (email != "")){
+            return true
+        }
+        Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
+        return false
+
+
     }
 
     companion object {

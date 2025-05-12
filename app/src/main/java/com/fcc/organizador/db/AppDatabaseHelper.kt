@@ -14,7 +14,7 @@ class AppDatabaseHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
 
     companion object{
         private const val DATABASE_NAME = "organizer_app.db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 4
 
 
         //TABLE: TEACHER
@@ -49,7 +49,7 @@ class AppDatabaseHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
             db?.insert(TABLE_SCHEDULE, null, values)
         }
 
-        createTableQuery = "CREATE TABLE $TABLE_TEACHER ($COL_TEACHER_ID INTEGER PRIMARY KEY, $COL_TEACHER_NAME TEXT NOT NULL, $COL_TEACHER_CUBICLE TEXT NOT NULL, $COL_TEACHER_DESCRIPTION TEXT NOT NULL, $COL_TEACHER_CONTACT TEXT NOT NULL, $COL_TEACHER_POSITION INTEGER NOT NULL UNIQUE)"
+        createTableQuery = "CREATE TABLE $TABLE_TEACHER ($COL_TEACHER_ID INTEGER PRIMARY KEY, $COL_TEACHER_NAME TEXT UNIQUE NOT NULL, $COL_TEACHER_CUBICLE TEXT NOT NULL, $COL_TEACHER_DESCRIPTION TEXT NOT NULL, $COL_TEACHER_CONTACT TEXT NOT NULL, $COL_TEACHER_POSITION INTEGER NOT NULL)"
         db?.execSQL(createTableQuery)
 
     }
@@ -122,6 +122,67 @@ class AppDatabaseHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
             put(COL_TEACHER_POSITION, teacher.position)
         }
         db.insert(TABLE_TEACHER, null, values)
+        db.close()
+    }
+
+    fun getAllTeachers(): MutableList<Teacher>{
+        val teachersList = mutableListOf<Teacher>()
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_TEACHER ORDER BY $COL_TEACHER_POSITION ASC"
+        val cursor = db.rawQuery(query, null)
+
+        with(cursor) {
+            while (moveToNext()) {
+                val name = getString(getColumnIndexOrThrow(COL_TEACHER_NAME))
+                val cubicle = getString(getColumnIndexOrThrow(COL_TEACHER_CUBICLE))
+                val contact = getString(getColumnIndexOrThrow(COL_TEACHER_CONTACT))
+                val description = getString(getColumnIndexOrThrow(COL_TEACHER_DESCRIPTION))
+                val position = getInt(getColumnIndexOrThrow(COL_TEACHER_POSITION))
+
+                teachersList.add(Teacher(name, cubicle, contact, description, position))
+            }
+            close()
+        }
+        return teachersList
+    }
+
+    fun deleteTeacher(position: Int){
+        val db = writableDatabase
+        try {
+            db.delete(TABLE_TEACHER, "$COL_TEACHER_POSITION = ?", arrayOf(position.toString()))
+        } finally {
+            db.close()
+        }
+    }
+
+    fun upgradeTeacher(teacher: Teacher){
+        val db = writableDatabase
+        val values = ContentValues().apply{
+            put(COL_TEACHER_NAME, teacher.name)
+            put(COL_TEACHER_CUBICLE, teacher.cubicle)
+            put(COL_TEACHER_CONTACT, teacher.contact)
+            put(COL_TEACHER_DESCRIPTION, teacher.description)
+        }
+
+        db.update(TABLE_TEACHER, values, "$COL_TEACHER_POSITION = ?", arrayOf(teacher.position.toString()))
+        db.close()
+    }
+
+    fun teacherNameExists(name: String): Boolean {
+        val db = readableDatabase
+        return db.query(TABLE_TEACHER, arrayOf(COL_TEACHER_ID), "$COL_TEACHER_NAME = ?", arrayOf(name), null, null, null
+        ).use { cursor ->
+            cursor.count > 0
+        }
+    }
+
+    fun reorderTeacher(teacher: Teacher, newPosition: Int){
+        val db = writableDatabase
+        val values = ContentValues().apply{
+            put(COL_TEACHER_POSITION, newPosition)
+        }
+
+        db.update(TABLE_TEACHER, values, "$COL_TEACHER_NAME = ?", arrayOf(teacher.name))
         db.close()
     }
 }

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fcc.organizador.adapter.TeacherAdapter
 import com.fcc.organizador.adapter.TeacherViewHolder
 import com.fcc.organizador.databinding.FragmentTeachersBinding
+import com.fcc.organizador.db.AppDatabaseHelper
 import com.google.android.material.snackbar.Snackbar
 
 // TODO: Rename parameter arguments, choose names that match
@@ -35,10 +36,11 @@ class TeachersFragment : Fragment() {
     private var param2: String? = null
     private var _binding: FragmentTeachersBinding? = null
     private val binding get() = _binding!!
-    private var teacherMutableList: MutableList<Teacher> = TeacherProvider.teachersList.toMutableList()
+    private lateinit var teacherMutableList: MutableList<Teacher>
     private lateinit var adapter: TeacherAdapter
     private lateinit var llmanager: LinearLayoutManager
     private lateinit var teacherViewModel: TeacherViewModel
+    private lateinit var db: AppDatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,11 +70,12 @@ class TeachersFragment : Fragment() {
                 editedTeacher(teacher)
                 teacherViewModel.teacherEdited()
             }
-
-
         }
 
         teacherViewModel.getEditTeacher().observe(viewLifecycleOwner, teacherEditedObserver)
+
+        db = AppDatabaseHelper(requireContext())
+        teacherMutableList = db.getAllTeachers() //Initialize teacher mutable list
 
         llmanager = LinearLayoutManager(requireContext())
         initRecyclerView()
@@ -173,12 +176,14 @@ class TeachersFragment : Fragment() {
     }
 
     private fun onItemSelected(teacher: Teacher){
-        Toast.makeText(requireContext(), teacher.toString(), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), teacher.position.toString(), Toast.LENGTH_SHORT).show()
     }
 
     private fun onDeletedItem(position: Int){
         teacherMutableList.removeAt(position)
+        db.deleteTeacher(position)
         adapter.notifyItemRemoved(position)
+        reorderTeachersPositions()
     }
 
     private fun createTeacher() {
@@ -190,6 +195,7 @@ class TeachersFragment : Fragment() {
 
     private fun addTeacher(teacher: Teacher) {
         teacherMutableList.add(teacher)
+        db.insertTeacher(teacher)
         adapter.notifyItemInserted(teacherMutableList.size - 1)
         llmanager.scrollToPositionWithOffset(teacherMutableList.size - 1, 10)
 
@@ -198,6 +204,7 @@ class TeachersFragment : Fragment() {
 
     private fun restoreTeacher(position: Int, teacher: Teacher){
         teacherMutableList.add(position, teacher)
+        db.insertTeacher(teacher)
         adapter.notifyItemInserted(position)
 
         binding.recyclerTeachers.post { //This is to fix when a teacher is restored because if the item is not reDrawn, the item will
@@ -208,6 +215,7 @@ class TeachersFragment : Fragment() {
             }
         }
         llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
+        reorderTeachersPositions()
     }
 
     private fun changeTeacherPosition(initialPosition: Int, finalPosition: Int){
@@ -227,7 +235,6 @@ class TeachersFragment : Fragment() {
         }
         snackbar.setActionTextColor(Color.YELLOW)
         snackbar.show()
-        reorderTeachersPositions()
     }
 
     private fun editFunction(position: Int){
@@ -254,15 +261,17 @@ class TeachersFragment : Fragment() {
     }
 
     private fun editedTeacher(teacher: Teacher){
-        val position = teacherViewModel.getEditedPosition()
-
+        val position = teacherViewModel.getEditedPosition() //obtain the correct position
+        //to edit
         teacherMutableList[position] = teacher
+        db.upgradeTeacher(teacher)
         adapter.notifyItemChanged(position)
         llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
     }
 
     private fun reorderTeachersPositions(){
         for ((index,teacher) in teacherMutableList.withIndex()){
+            db.reorderTeacher(teacher, index)
             teacher.position = index
         }
     }

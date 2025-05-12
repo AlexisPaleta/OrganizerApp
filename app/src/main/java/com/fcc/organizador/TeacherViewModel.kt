@@ -10,8 +10,8 @@ class TeacherViewModel: ViewModel() {
     private var editingTeacher: Teacher? = null //This teacher object is for the edit logic
     private var editTeacher:MutableLiveData<Teacher?> = MutableLiveData() //This MutableLiveData teacher is for the edit logic
     //an observer will be save the teacher value saved here
-    private var editedPosition: Int = 0
-    private var teacherListLastPosition = 0
+    private var editedPosition: Int = 0 //save the position value to know which teacher edit
+    private var teacherListLastPosition = 0 //save the position that will be used as reference for a new teacher
 
     fun getNewTeacher(): MutableLiveData<Teacher?>{
         return newTeacher
