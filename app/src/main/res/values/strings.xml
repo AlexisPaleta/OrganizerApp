@@ -3,6 +3,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_a_teacher_item">Add a teacher item</string>
+    <string name="add_a_homework_item">Add a homework item</string>
     <string name="name">Nombre</string>
     <string name="cubicle">Cubículo</string>
     <string name="contact">Contacto</string>
