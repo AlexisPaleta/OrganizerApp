@@ -20,12 +20,14 @@
             android:layout_marginBottom="16dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titleLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:startIconDrawable="@drawable/ic_description"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:counterEnabled="true"
             app:counterMaxLength="40"
+            app:errorEnabled="true"
             android:layout_marginBottom="8dp">
 
             <EditText
@@ -61,6 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            app:errorEnabled="true"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <TextView
@@ -78,6 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            app:errorEnabled="true"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <TextView

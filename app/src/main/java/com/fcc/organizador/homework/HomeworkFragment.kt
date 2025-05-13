@@ -1,11 +1,24 @@
 package com.fcc.organizador.homework
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.fcc.organizador.R
+import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.fcc.organizador.databinding.FragmentHomeworkBinding
+import com.fcc.organizador.homework.adapter.HomeworkAdapter
+import com.fcc.organizador.homework.adapter.HomeworkViewHolder
+import com.fcc.organizador.homework.notification.cancelNotification
+import com.fcc.organizador.homework.notification.scheduleExactNotification
+import com.google.android.material.snackbar.Snackbar
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +34,12 @@ class HomeworkFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var _binding: FragmentHomeworkBinding? = null
+    private val binding get() = _binding!!
+    private var homeworkMutableList: MutableList<Homework> = mutableListOf<Homework>()
+    private lateinit var adapter: HomeworkAdapter
+    private lateinit var llmanager: LinearLayoutManager
+    private lateinit var homeworkViewModel: HomeworkViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,14 +47,192 @@ class HomeworkFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        homeworkViewModel = ViewModelProvider(requireActivity())[HomeworkViewModel::class.java]
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val homeworkAddedObserver = Observer<Homework?>{ homework ->
+            if (homework!=null && !homeworkViewModel.getEditing()){
+                addHomework(homework)
+                homeworkViewModel.homeworkAdded()
+            }
+        }
+
+        homeworkViewModel.getNewHomework().observe(viewLifecycleOwner, homeworkAddedObserver)
+
+        binding.addHomeworkFloatingButton.setOnClickListener { createHomework() }
+
+        val homeworkEditedObserver = Observer<Homework?>{ homework ->
+            if (homework!=null && homeworkViewModel.getEditing()){
+                editedHomework(homework)
+                homeworkViewModel.homeworkEdited()
+            }
+        }
+
+        homeworkViewModel.getEditHomework().observe(viewLifecycleOwner, homeworkEditedObserver)
+
+
+        llmanager = LinearLayoutManager(requireContext())
+        initRecyclerView()
+
+        val itemTouchHelperCallback = object : ItemTouchHelper.Callback(){// This is to permit move the teachers list, change the order
+        //and delete when the element swipes to the left
+        override fun getMovementFlags(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder
+        ): Int {
+            return makeMovementFlags(0, ItemTouchHelper.LEFT.or(ItemTouchHelper.RIGHT) )
+        }
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                Toast.makeText(requireContext(), direction.toString(), Toast.LENGTH_SHORT).show()
+                val position = viewHolder.adapterPosition
+
+                when (direction){
+                    ItemTouchHelper.LEFT ->{
+                        deleteFunction(position)
+                    }
+                    ItemTouchHelper.RIGHT ->{
+                        editFunction(position)
+                    }
+                }
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(binding.recyclerHomework)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_homework, container, false)
+        _binding = FragmentHomeworkBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun initRecyclerView(){
+        adapter = HomeworkAdapter(
+            homeworkList = homeworkMutableList,
+            onClickListener = { homework -> onItemSelected(homework) },
+            onClickDelete = { position -> onDeletedItem(position) }
+        )
+
+        val decoration = DividerItemDecoration(requireContext(), llmanager.orientation)
+        val recyclerView = binding.recyclerHomework
+
+        recyclerView.layoutManager = llmanager
+        recyclerView.adapter = adapter
+        binding.recyclerHomework.addItemDecoration(decoration)
+    }
+
+    private fun onItemSelected(homework: Homework){
+        Toast.makeText(requireContext(), homework.title + " " + homework.id, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun onDeletedItem(position: Int){
+        homeworkMutableList.removeAt(position)
+        adapter.notifyItemRemoved(position)
+    }
+
+    private fun createHomework() {
+        val dialog = FullScreenDialogHomeworkFragment.newInstance()
+        dialog.show(parentFragmentManager, "AddTeacherDialog")
+        homeworkViewModel.setEditing(false)
+        homeworkViewModel.setHomeworkListLastPosition(homeworkMutableList.size - 1)
+    }
+
+    private fun addHomework(homework: Homework) {
+        println("holaaa noti221")
+        homeworkMutableList.add(homework)
+        adapter.notifyItemInserted(homeworkMutableList.size - 1)
+        llmanager.scrollToPositionWithOffset(homeworkMutableList.size - 1, 10)
+
+        homework.id =  (System.currentTimeMillis() + Math.random()).toInt()
+
+        scheduleExactNotification(requireContext(), homework)
+
+        Toast.makeText(requireContext(), "${homework.title} agregado", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun restoreHomework(position: Int, homework: Homework){
+        homeworkMutableList.add(position, homework)
+        adapter.notifyItemInserted(position)
+
+        binding.recyclerHomework.post { //This is to fix when a teacher is restored because if the item is not reDrawn, the item will
+            //be an empty card
+            val holder = binding.recyclerHomework.findViewHolderForAdapterPosition(position)
+            holder?.let {
+                HomeworkViewHolder(it.itemView).resetSwipePosition()
+            }
+        }
+
+        scheduleExactNotification(requireContext(), homework)
+
+        llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
+    }
+
+    private fun deleteFunction(position: Int){
+        val deletedHomework = homeworkMutableList[position]
+
+        cancelNotification(requireContext(), deletedHomework.id)
+
+        onDeletedItem(position)
+        val snackbar = Snackbar.make(binding.root, "Maestro eliminado", Snackbar.LENGTH_LONG)
+        snackbar.setAction("Deshacer") {
+            restoreHomework(position, deletedHomework)
+        }
+        snackbar.setActionTextColor(Color.YELLOW)
+        snackbar.show()
+    }
+
+    private fun editFunction(position: Int){
+        Toast.makeText(requireContext(), "Edit Function", Toast.LENGTH_SHORT).show()
+        adapter.notifyItemChanged(position)
+        binding.recyclerHomework.post { //This is to fix when a teacher is restored because if the item is not reDrawn, the item will
+            //be an empty card
+            val holder = binding.recyclerHomework.findViewHolderForAdapterPosition(position)
+            holder?.let {
+                HomeworkViewHolder(it.itemView).resetSwipePosition()
+            }
+        }
+        llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
+
+        val editingHomework = homeworkMutableList[position]
+        homeworkViewModel.setEditing(true)
+        homeworkViewModel.setEditingHomework(editingHomework)
+        homeworkViewModel.setEditedPosition(position)
+
+        val dialog = FullScreenDialogHomeworkFragment.newInstance()
+        dialog.show(parentFragmentManager, "AddTeacherDialog")
+
+
+    }
+
+    private fun editedHomework(homework: Homework){
+        val position = homeworkViewModel.getEditedPosition() //obtain the correct position
+        //to edit
+        homeworkMutableList[position] = homework
+
+        cancelNotification(requireContext(), homework.id)
+        scheduleExactNotification(requireContext(), homework)
+
+        adapter.notifyItemChanged(position)
+        llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
     }
 
     companion object {

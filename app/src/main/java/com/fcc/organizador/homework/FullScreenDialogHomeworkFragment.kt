@@ -57,7 +57,7 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
         }
 
         binding.textViewTime.setOnClickListener {
-            if (dueTimeMillis == 0L) {
+            if (binding.textViewDate.text == "Seleccionar fecha") {
                 Toast.makeText(context, "Primero selecciona una fecha", Toast.LENGTH_SHORT).show()
             } else {
                 showTimePicker()
@@ -105,18 +105,48 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
         val description = binding.editTextDescription.text.toString().trim()
 
         if (title.isEmpty()) {
-            binding.editTextTitle.error = "Ingresa un título"
+            binding.titleLayout.error = "Ingresa un título"
             return
+        }else{
+            binding.titleLayout.error = null
         }
 
-        val homework = Homework(title, description, dueTimeMillis)
+        if (binding.textViewDate.text == "Seleccionar fecha"){
+            binding.datePickerLayout.error = "Ingresa una fecha"
+            return
+        }else{
+            binding.datePickerLayout.error = null
+        }
+
+        if (binding.textViewTime.text == "Seleccionar hora"){
+            binding.timePickerLayout.error = "Ingresa una hora"
+            return
+        }else{
+            binding.timePickerLayout.error = null
+        }
+
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = dueTimeMillis
+        }
+
+        selectedYear = calendar.get(Calendar.YEAR)
+        selectedMonth = calendar.get(Calendar.MONTH)
+        selectedDay = calendar.get(Calendar.DAY_OF_MONTH)
+        selectedHour = calendar.get(Calendar.HOUR_OF_DAY)
+        selectedMinute = calendar.get(Calendar.MINUTE)
+
+        val dateText = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+        val timeText = "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}"
+
+        // the id value is provisional if the homework is being created
+        val idValue = if(editing && homeworkViewModel.getEditingHomework()!= null) homeworkViewModel.getEditingHomework()!!.id else 0
+        val homework = Homework(idValue, title, description, dueTimeMillis, dateText, timeText)
 
         if (!editing) {
             homeworkViewModel.setNewHomework(homework)
         } else {
             homeworkViewModel.setEditHomework(homework)
         }
-
 
         dismiss()
     }
