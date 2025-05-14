@@ -8,8 +8,7 @@ import com.fcc.organizador.homework.Homework
 
 class HomeworkAdapter(
     private val homeworkList: List<Homework>,
-    private val onClickListener: (Homework) -> Unit,
-    private val onClickDelete:(Int) -> Unit
+    private val onClickListener: (Homework) -> Unit
 ): RecyclerView.Adapter<HomeworkViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeworkViewHolder {
@@ -23,6 +22,6 @@ class HomeworkAdapter(
 
     override fun onBindViewHolder(holder: HomeworkViewHolder, position: Int) {
         val item = homeworkList[position]
-        holder.render(item, onClickListener, onClickDelete)
+        holder.render(item, onClickListener)
     }
 }

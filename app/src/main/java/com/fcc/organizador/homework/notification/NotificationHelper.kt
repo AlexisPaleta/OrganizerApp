@@ -14,8 +14,6 @@ import com.fcc.organizador.homework.Homework
 import java.util.Calendar
 
 fun scheduleExactNotification(context: Context, homework: Homework) {
-    println("holaaa noti")
-
     val timeMillis = homework.dueDateMillis
 
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager

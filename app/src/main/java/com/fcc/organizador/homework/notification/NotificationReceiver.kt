@@ -17,7 +17,6 @@ class NotificationReceiver : BroadcastReceiver() {
 
     companion object {
         const val CHANNEL_ID = "organizador_channel"
-        const val NOTIFICATION_ID = 123
     }
 
     override fun onReceive(context: Context, intent: Intent?) {
@@ -52,7 +51,7 @@ class NotificationReceiver : BroadcastReceiver() {
             .setContentIntent(pendingIntent)
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFICATION_ID, notification.build())
+        notificationManager.notify(notificationId, notification.build())
     }
 
     private fun createNotificationChannel(context: Context) {

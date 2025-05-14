@@ -264,7 +264,7 @@ class TeachersFragment : Fragment() {
         val position = teacherViewModel.getEditedPosition() //obtain the correct position
         //to edit
         teacherMutableList[position] = teacher
-        db.upgradeTeacher(teacher)
+        db.updateTeacher(teacher)
         adapter.notifyItemChanged(position)
         llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
     }

@@ -13,7 +13,7 @@ class HomeworkViewHolder(view: View): RecyclerView.ViewHolder(view) {
     val editBackground = binding.editBackground
     val deleteBackground = binding.deleteBackground
 
-    fun render(homework: Homework, onClickListener: (Homework) -> Unit, onClickDelete: (Int) -> Unit){
+    fun render(homework: Homework, onClickListener: (Homework) -> Unit){
         binding.homeworkTitle.text = homework.title
         binding.homeworkDueTime.text = "Fecha programada: ${homework.dateText} a las ${homework.timeText}"
         binding.homeworkDescription.text = homework.description

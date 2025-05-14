@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.fcc.organizador.R
 import com.fcc.organizador.databinding.DialogHomeworkBinding
+import com.fcc.organizador.db.AppDatabaseHelper
 import java.util.Calendar
 
 class FullScreenDialogHomeworkFragment: DialogFragment() {
@@ -18,6 +19,7 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
 
     private val binding get() = _binding!!
     private lateinit var homeworkViewModel: HomeworkViewModel
+    private lateinit var db: AppDatabaseHelper
 
     private var selectedYear = 0
     private var selectedMonth = 0
@@ -43,6 +45,8 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        db = AppDatabaseHelper(requireContext())
 
         if (homeworkViewModel.getEditing()){ //If the dialog was called by the edit swipe option
             fillOutHomeworkInformation()
@@ -104,26 +108,7 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
         val title = binding.editTextTitle.text.toString().trim()
         val description = binding.editTextDescription.text.toString().trim()
 
-        if (title.isEmpty()) {
-            binding.titleLayout.error = "Ingresa un título"
-            return
-        }else{
-            binding.titleLayout.error = null
-        }
-
-        if (binding.textViewDate.text == "Seleccionar fecha"){
-            binding.datePickerLayout.error = "Ingresa una fecha"
-            return
-        }else{
-            binding.datePickerLayout.error = null
-        }
-
-        if (binding.textViewTime.text == "Seleccionar hora"){
-            binding.timePickerLayout.error = "Ingresa una hora"
-            return
-        }else{
-            binding.timePickerLayout.error = null
-        }
+        if (!validation(title)) return //only continue if the homework is validated
 
         val calendar = Calendar.getInstance().apply {
             timeInMillis = dueTimeMillis
@@ -149,6 +134,35 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
         }
 
         dismiss()
+    }
+
+    private fun validation(title: String): Boolean{
+        var validated = true
+
+        if (title.isEmpty()) {
+            binding.titleLayout.error = "Ingresa un título"
+            validated = false
+        }else if (db.homeworkTitleExists(title)){
+            binding.titleLayout.error = "El titulo ya fue registrado"
+            validated = false
+        }else{
+            binding.titleLayout.error = null
+        }
+
+        if (binding.textViewDate.text == "Seleccionar fecha"){
+            binding.datePickerLayout.error = "Ingresa una fecha"
+            validated = false
+        }else{
+            binding.datePickerLayout.error = null
+        }
+
+        if (binding.textViewTime.text == "Seleccionar hora"){
+            binding.timePickerLayout.error = "Ingresa una hora"
+            validated = false
+        }else{
+            binding.timePickerLayout.error = null
+        }
+        return validated
     }
 
     private fun showDatePicker() {

@@ -1,5 +1,6 @@
 package com.fcc.organizador.homework
 
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fcc.organizador.databinding.FragmentHomeworkBinding
+import com.fcc.organizador.db.AppDatabaseHelper
 import com.fcc.organizador.homework.adapter.HomeworkAdapter
 import com.fcc.organizador.homework.adapter.HomeworkViewHolder
 import com.fcc.organizador.homework.notification.cancelNotification
@@ -36,10 +38,11 @@ class HomeworkFragment : Fragment() {
     private var param2: String? = null
     private var _binding: FragmentHomeworkBinding? = null
     private val binding get() = _binding!!
-    private var homeworkMutableList: MutableList<Homework> = mutableListOf<Homework>()
+    private lateinit var homeworkMutableList: MutableList<Homework>
     private lateinit var adapter: HomeworkAdapter
     private lateinit var llmanager: LinearLayoutManager
     private lateinit var homeworkViewModel: HomeworkViewModel
+    private lateinit var db: AppDatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,9 @@ class HomeworkFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        db = AppDatabaseHelper(requireContext())
+        homeworkMutableList = db.getAllHomework() //Initialize homework mutable list
 
         val homeworkAddedObserver = Observer<Homework?>{ homework ->
             if (homework!=null && !homeworkViewModel.getEditing()){
@@ -72,7 +78,6 @@ class HomeworkFragment : Fragment() {
         }
 
         homeworkViewModel.getEditHomework().observe(viewLifecycleOwner, homeworkEditedObserver)
-
 
         llmanager = LinearLayoutManager(requireContext())
         initRecyclerView()
@@ -107,6 +112,32 @@ class HomeworkFragment : Fragment() {
                     }
                 }
             }
+
+            override fun onChildDraw(
+                canvas: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    HomeworkViewHolder.handleSwipe(HomeworkViewHolder(viewHolder.itemView), dX)
+                } else {
+                    super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                }
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                //Reset position when item is released
+                viewHolder.itemView.translationX = 0f
+                HomeworkViewHolder(viewHolder.itemView).apply {
+                    editBackground.visibility = View.GONE
+                    deleteBackground.visibility = View.GONE
+                }
+            }
         }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(binding.recyclerHomework)
@@ -128,8 +159,7 @@ class HomeworkFragment : Fragment() {
     private fun initRecyclerView(){
         adapter = HomeworkAdapter(
             homeworkList = homeworkMutableList,
-            onClickListener = { homework -> onItemSelected(homework) },
-            onClickDelete = { position -> onDeletedItem(position) }
+            onClickListener = { homework -> onItemSelected(homework) }
         )
 
         val decoration = DividerItemDecoration(requireContext(), llmanager.orientation)
@@ -144,8 +174,9 @@ class HomeworkFragment : Fragment() {
         Toast.makeText(requireContext(), homework.title + " " + homework.id, Toast.LENGTH_SHORT).show()
     }
 
-    private fun onDeletedItem(position: Int){
+    private fun onDeletedItem(position: Int, id: Int){
         homeworkMutableList.removeAt(position)
+        db.deleteHomework(id)
         adapter.notifyItemRemoved(position)
     }
 
@@ -157,12 +188,14 @@ class HomeworkFragment : Fragment() {
     }
 
     private fun addHomework(homework: Homework) {
-        println("holaaa noti221")
         homeworkMutableList.add(homework)
+
+        db.insertHomework(homework)
+
         adapter.notifyItemInserted(homeworkMutableList.size - 1)
         llmanager.scrollToPositionWithOffset(homeworkMutableList.size - 1, 10)
 
-        homework.id =  (System.currentTimeMillis() + Math.random()).toInt()
+        homework.id =  (System.currentTimeMillis() + homework.hashCode()).toInt()
 
         scheduleExactNotification(requireContext(), homework)
 
@@ -171,6 +204,10 @@ class HomeworkFragment : Fragment() {
 
     private fun restoreHomework(position: Int, homework: Homework){
         homeworkMutableList.add(position, homework)
+
+        val id = db.insertHomework(homework)
+        homework.id = id //the is reassigned by database
+
         adapter.notifyItemInserted(position)
 
         binding.recyclerHomework.post { //This is to fix when a teacher is restored because if the item is not reDrawn, the item will
@@ -181,7 +218,7 @@ class HomeworkFragment : Fragment() {
             }
         }
 
-        scheduleExactNotification(requireContext(), homework)
+        scheduleExactNotification(requireContext(), homework) // re-do the notification
 
         llmanager.scrollToPositionWithOffset(position, 10) //Correct position to see the restored teacher
     }
@@ -191,7 +228,7 @@ class HomeworkFragment : Fragment() {
 
         cancelNotification(requireContext(), deletedHomework.id)
 
-        onDeletedItem(position)
+        onDeletedItem(position, deletedHomework.id)
         val snackbar = Snackbar.make(binding.root, "Maestro eliminado", Snackbar.LENGTH_LONG)
         snackbar.setAction("Deshacer") {
             restoreHomework(position, deletedHomework)
@@ -227,6 +264,8 @@ class HomeworkFragment : Fragment() {
         val position = homeworkViewModel.getEditedPosition() //obtain the correct position
         //to edit
         homeworkMutableList[position] = homework
+
+        db.updateHomework(homework)
 
         cancelNotification(requireContext(), homework.id)
         scheduleExactNotification(requireContext(), homework)
