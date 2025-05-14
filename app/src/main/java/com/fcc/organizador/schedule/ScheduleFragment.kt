@@ -124,6 +124,8 @@ class ScheduleFragment : Fragment() {
         val editText = dialogView.findViewById<EditText>(R.id.editTextActivity)
         val viewColor = dialogView.findViewById<View>(R.id.viewColorPreview)
         val btnPickColor = dialogView.findViewById<Button>(R.id.btnPickColor)
+        val btnAccept = dialogView.findViewById<Button>(R.id.btnAccept)
+        val btnCancel= dialogView.findViewById<Button>(R.id.btnClose)
 
         var selectedColor: Int = schedule.color //initial color
         if (schedule.content == "Click para editar"){
@@ -148,23 +150,29 @@ class ScheduleFragment : Fragment() {
                 .show()
         }
 
-        MaterialAlertDialogBuilder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(dialogView)
-            .setTitle("Edit activity")
-            .setPositiveButton("Accept") { dialog, _ ->
-                var content = editText.text.toString()
-                if (content == ""){
-                    content = "Click para editar"
-                }
-                schedule.content = content
-                schedule.color = selectedColor
-                val updatedSchedule = Schedule(content, selectedColor, schedule.position)
-                db.updateScheduleCell(updatedSchedule)
-                adapter.notifyItemChanged(schedule.position)
-                dialog.dismiss()
+            .setCancelable(false)
+            .create()
+
+        btnAccept.setOnClickListener {
+            var content = editText.text.toString()
+            if (content == ""){
+                content = "Click para editar"
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+            schedule.content = content
+            schedule.color = selectedColor
+            val updatedSchedule = Schedule(content, selectedColor, schedule.position)
+            db.updateScheduleCell(updatedSchedule)
+            adapter.notifyItemChanged(schedule.position)
+            dialog.dismiss()
+        }
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
 
     }
 

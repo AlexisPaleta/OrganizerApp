@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,9 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fcc.organizador.adapter.TeacherAdapter
 import com.fcc.organizador.adapter.TeacherViewHolder
+import com.fcc.organizador.databinding.DialogTeacherSelectedBinding
 import com.fcc.organizador.databinding.FragmentTeachersBinding
 import com.fcc.organizador.db.AppDatabaseHelper
+import com.fcc.organizador.schedule.Schedule
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.skydoves.colorpickerview.ColorPickerDialog
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -177,6 +183,25 @@ class TeachersFragment : Fragment() {
 
     private fun onItemSelected(teacher: Teacher){
         Toast.makeText(requireContext(), teacher.position.toString(), Toast.LENGTH_SHORT).show()
+
+        val dialogBinding = DialogTeacherSelectedBinding.inflate(layoutInflater)
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogBinding.root)
+            .setCancelable(true)
+            .create()
+
+        with(dialogBinding) {
+            textViewName.text = teacher.name
+            textViewCubicle.text = teacher.cubicle
+            textViewMail.text = teacher.contact
+            textViewDescription.text = teacher.description
+
+            btnClose.setOnClickListener { dialog.dismiss() }
+        }
+
+        dialog.show()
+
     }
 
     private fun onDeletedItem(position: Int){

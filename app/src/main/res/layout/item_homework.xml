@@ -17,14 +17,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            android:background="#22f">
+            android:background="#ffb900">
 
             <ImageButton
                 android:id="@+id/icEdit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_edit"
-                android:background="#22f"
+                android:background="#ffb900"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"/>
 
@@ -46,14 +46,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            android:background="#f23">
+            android:background="#e81123">
 
             <ImageButton
                 android:id="@+id/icDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_delete"
-                android:background="#f23"
+                android:background="#e81123"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="10dp"/>
@@ -74,7 +74,7 @@
             android:id="@+id/foregroundView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/palette_blue2"
+            android:background="#439A86"
             android:visibility="visible"
             android:padding="16dp">
             <ImageView

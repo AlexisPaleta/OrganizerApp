@@ -7,28 +7,30 @@
     tools:context=".schedule.ScheduleFragment">
 
     <Button
-        android:id="@+id/btnPDF"
+        android:id="@+id/btnDeleteRow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="PDF"
+        android:text="Eliminar fila"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/btnEdition"
-        android:layout_marginTop="10dp"/>
+        app:layout_constraintEnd_toStartOf="@+id/btnAddRow"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="#6e2585"/>
 
     <Button
-        android:id="@+id/btnEdition"
+        android:id="@+id/btnAddRow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit"
-        app:layout_constraintTop_toTopOf="@+id/btnPDF"
-        app:layout_constraintStart_toStartOf="@id/btnPDF"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:text="Agregar fila"
+        app:layout_constraintTop_toTopOf="@+id/btnDeleteRow"
+        app:layout_constraintStart_toEndOf="@id/btnDeleteRow"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:backgroundTint="#6e2585"/>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/btnPDF"
+        app:layout_constraintTop_toBottomOf="@id/btnDeleteRow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="10dp">
@@ -40,24 +42,7 @@
 
     </HorizontalScrollView>
 
-    <Button
-        android:id="@+id/btnAddRow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Agregar fila"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnDeleteRow"
-        android:layout_marginBottom="20dp"/>
 
-    <Button
-        android:id="@+id/btnDeleteRow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Eliminar fila"
-        app:layout_constraintTop_toTopOf="@id/btnAddRow"
-        app:layout_constraintStart_toEndOf="@id/btnAddRow"
-        app:layout_constraintEnd_toEndOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
