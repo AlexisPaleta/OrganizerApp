@@ -210,7 +210,7 @@ class AppDatabaseHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
             put(COL_HOMEWORK_TITLE, homework.title)
             put(COL_HOMEWORK_DESCRIPTION, homework.description)
             put(COL_HOMEWORK_DUE_DATE_MILLIS, homework.dueDateMillis)
-            put(COL_HOMEWORK_DATE_TEXT, homework.description)
+            put(COL_HOMEWORK_DATE_TEXT, homework.dateText)
             put(COL_HOMEWORK_TIME_TEXT, homework.timeText)
         }
         val id = db.insert(TABLE_HOMEWORK, null, values).toInt() //return the id of the inserted homework
@@ -255,7 +255,7 @@ class AppDatabaseHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
             put(COL_HOMEWORK_TITLE, homework.title)
             put(COL_HOMEWORK_DESCRIPTION, homework.description)
             put(COL_HOMEWORK_DUE_DATE_MILLIS, homework.dueDateMillis)
-            put(COL_HOMEWORK_DATE_TEXT, homework.description)
+            put(COL_HOMEWORK_DATE_TEXT, homework.dateText)
             put(COL_HOMEWORK_TIME_TEXT, homework.timeText)
         }
 

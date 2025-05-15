@@ -78,16 +78,16 @@
             android:visibility="visible"
             android:padding="16dp">
             <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
                 android:id="@+id/homeworkImage"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginEnd="16dp"
-                android:background="#337"/>
+                android:src="@drawable/ic_bell"/>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Profesor"
                 android:textColor="@color/white"
@@ -95,12 +95,13 @@
                 android:textStyle="bold"
                 android:layout_toEndOf="@id/homeworkImage"
                 android:layout_alignParentTop="true"
+
                 android:textSize="22sp"
-                android:maxLength="12"
+                android:maxLines="1"
                 android:ellipsize="end"/>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="CCO1-112"
                 android:textColor="@color/white"
@@ -108,19 +109,22 @@
                 android:textStyle="bold"
                 android:layout_toEndOf="@id/homeworkImage"
                 android:layout_below="@id/homeworkTitle"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="The description is here"
+                android:text="CCO1-112"
                 android:textColor="@color/white"
-                android:id="@+id/homeworkDescription"
+                android:id="@+id/homeworkTimeText"
                 android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                android:layout_below="@id/homeworkImage"
-                android:layout_centerHorizontal="true"
-                android:textSize="16sp"/>
+                android:layout_toEndOf="@id/homeworkImage"
+                android:layout_below="@id/homeworkDueTime"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
         </RelativeLayout>
 

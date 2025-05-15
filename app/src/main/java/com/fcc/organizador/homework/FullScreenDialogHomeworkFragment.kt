@@ -108,7 +108,7 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
         val title = binding.editTextTitle.text.toString().trim()
         val description = binding.editTextDescription.text.toString().trim()
 
-        if (!validation(title)) return //only continue if the homework is validated
+        if (!validation(title, editing)) return //only continue if the homework is validated
 
         val calendar = Calendar.getInstance().apply {
             timeInMillis = dueTimeMillis
@@ -136,13 +136,13 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
         dismiss()
     }
 
-    private fun validation(title: String): Boolean{
+    private fun validation(title: String, editing: Boolean): Boolean{
         var validated = true
 
         if (title.isEmpty()) {
             binding.titleLayout.error = "Ingresa un título"
             validated = false
-        }else if (db.homeworkTitleExists(title)){
+        }else if (editing && db.homeworkTitleExists(title)){
             binding.titleLayout.error = "El titulo ya fue registrado"
             validated = false
         }else{

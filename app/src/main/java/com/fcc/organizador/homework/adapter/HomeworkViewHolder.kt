@@ -15,8 +15,9 @@ class HomeworkViewHolder(view: View): RecyclerView.ViewHolder(view) {
 
     fun render(homework: Homework, onClickListener: (Homework) -> Unit){
         binding.homeworkTitle.text = homework.title
-        binding.homeworkDueTime.text = "Fecha programada: ${homework.dateText} a las ${homework.timeText}"
-        binding.homeworkDescription.text = homework.description
+        binding.homeworkDueTime.text = "Fecha programada: ${homework.dateText}"
+        binding.homeworkTimeText.text = "Hora programada: ${homework.timeText}"
+        //binding.homeworkDescription.text = homework.description
 
         binding.homeworkCardItem.setOnClickListener { onClickListener(homework) }
 

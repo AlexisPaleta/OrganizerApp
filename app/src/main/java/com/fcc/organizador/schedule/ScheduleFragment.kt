@@ -91,7 +91,7 @@ class ScheduleFragment : Fragment() {
         var newPosition = startPosition
 
         for (i in 1..columnsCount){
-            cellSchedule = Schedule("Click para editar", Color.GRAY, newPosition)
+            cellSchedule = Schedule("Click para editar", Color.CYAN, newPosition)
             scheduleMutableList.add(cellSchedule)
             db.insertScheduleCell(cellSchedule)
             newPosition++

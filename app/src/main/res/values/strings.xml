@@ -22,4 +22,5 @@
     <string name="domingo">Domingo</string>
     <string name="activity">Actividad</string>
     <string name="teacher_information">Información del Maestro</string>
+    <string name="homework_information">Información de la tarea</string>
 </resources>

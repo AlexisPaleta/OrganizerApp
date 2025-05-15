@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.fcc.organizador.databinding.DialogHomeworkSelectedBinding
 import com.fcc.organizador.databinding.FragmentHomeworkBinding
 import com.fcc.organizador.db.AppDatabaseHelper
 import com.fcc.organizador.homework.adapter.HomeworkAdapter
 import com.fcc.organizador.homework.adapter.HomeworkViewHolder
 import com.fcc.organizador.homework.notification.cancelNotification
 import com.fcc.organizador.homework.notification.scheduleExactNotification
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
 // TODO: Rename parameter arguments, choose names that match
@@ -172,6 +174,24 @@ class HomeworkFragment : Fragment() {
 
     private fun onItemSelected(homework: Homework){
         Toast.makeText(requireContext(), homework.title + " " + homework.id, Toast.LENGTH_SHORT).show()
+
+        val dialogBinding = DialogHomeworkSelectedBinding.inflate(layoutInflater)
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogBinding.root)
+            .setCancelable(true)
+            .create()
+
+        with(dialogBinding) {
+            textViewHomeworkTitle.text = homework.title
+            textViewHomeworkDateText.text = homework.dateText
+            textViewHomeworkTimeText.text = homework.timeText
+            textViewHomeworkDescription.text = homework.description
+
+            btnClose.setOnClickListener { dialog.dismiss() }
+        }
+
+        dialog.show()
     }
 
     private fun onDeletedItem(position: Int, id: Int){

@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnAddRow"
         android:layout_marginTop="10dp"
-        android:backgroundTint="#6e2585"/>
+        android:backgroundTint="#222E50"/>
 
     <Button
         android:id="@+id/btnAddRow"
@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="@+id/btnDeleteRow"
         app:layout_constraintStart_toEndOf="@id/btnDeleteRow"
         app:layout_constraintEnd_toEndOf="parent"
-        android:backgroundTint="#6e2585"/>
+        android:backgroundTint="#222E50"/>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
