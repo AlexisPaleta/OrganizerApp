@@ -58,6 +58,6 @@
         android:layout_marginBottom="20dp"
         android:contentDescription="@string/add_a_teacher_item"
         android:src="@drawable/ic_q"
-        app:backgroundTint="#222E50"
+        app:backgroundTint="#989f02"
         app:tint="#fff"/>
 </FrameLayout>
