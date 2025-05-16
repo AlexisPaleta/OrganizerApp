@@ -48,4 +48,16 @@
         android:src="@drawable/user_plus_solid"
         app:backgroundTint="#222E50"
         app:tint="#fff"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnHelp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:contentDescription="@string/add_a_teacher_item"
+        android:src="@drawable/ic_q"
+        app:backgroundTint="#222E50"
+        app:tint="#fff"/>
 </FrameLayout>

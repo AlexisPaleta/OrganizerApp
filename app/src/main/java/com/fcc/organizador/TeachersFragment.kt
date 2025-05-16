@@ -2,12 +2,13 @@ package com.fcc.organizador
 
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.DisplayMetrics
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -18,11 +19,10 @@ import com.fcc.organizador.adapter.TeacherAdapter
 import com.fcc.organizador.adapter.TeacherViewHolder
 import com.fcc.organizador.databinding.DialogTeacherSelectedBinding
 import com.fcc.organizador.databinding.FragmentTeachersBinding
+import com.fcc.organizador.databinding.HelpScreenBinding
 import com.fcc.organizador.db.AppDatabaseHelper
-import com.fcc.organizador.schedule.Schedule
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.skydoves.colorpickerview.ColorPickerDialog
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -148,6 +148,11 @@ class TeachersFragment : Fragment() {
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(binding.recyclerTeachers)
+
+        binding.btnHelp.setOnClickListener {
+            it.animate().rotationBy(360f).setDuration(300).start()
+            showHelpScreen()
+        }
 
     }
 
@@ -313,6 +318,39 @@ class TeachersFragment : Fragment() {
             db.reorderTeacher(teacher, index)
             teacher.position = index
         }
+    }
+
+    private fun showHelpScreen() {
+        val dialogBinding = HelpScreenBinding.inflate(layoutInflater)
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogBinding.root)
+            .setCancelable(true)
+            .create()
+
+        dialog.window?.apply {
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            val width = (displayMetrics.widthPixels * 0.9).toInt()
+            setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+            // Opcional: hacer más alto si es necesario
+            val height = (displayMetrics.heightPixels * 0.8).toInt()
+            setLayout(width, height)
+
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+
+        dialogBinding.btnCloseHelp.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+
+        val displayMetrics = resources.displayMetrics
+        val width = (displayMetrics.widthPixels * 0.9).toInt()
+        dialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
 
