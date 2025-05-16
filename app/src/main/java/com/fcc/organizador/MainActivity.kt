@@ -43,15 +43,15 @@ class MainActivity : AppCompatActivity() {
             TabLayoutMediator(tabView, viewPager){ tab, position ->
                 when(position){
                     0 -> {
-                        tab.text = "Teachers"
+                        tab.text = "Maestros"
                         tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_person)
                     }
                     1 -> {
-                        tab.text = "Homework"
+                        tab.text = "Tareas"
                         tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_description)
                     }
                     2 -> {
-                        tab.text = "Schedule"
+                        tab.text = "Horario"
                         tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_time)
                     }
                 }

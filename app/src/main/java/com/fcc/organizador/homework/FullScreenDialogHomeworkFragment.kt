@@ -50,6 +50,9 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
 
         if (homeworkViewModel.getEditing()){ //If the dialog was called by the edit swipe option
             fillOutHomeworkInformation()
+            binding.dialogTitle.text = "Editar Tarea"
+        }else{
+            binding.dialogTitle.text = "Agregar Nueva Tarea"
         }
 
         binding.btnSave.setOnClickListener {
@@ -142,7 +145,7 @@ class FullScreenDialogHomeworkFragment: DialogFragment() {
         if (title.isEmpty()) {
             binding.titleLayout.error = "Ingresa un título"
             validated = false
-        }else if (editing && db.homeworkTitleExists(title)){
+        }else if (!editing && db.homeworkTitleExists(title)){
             binding.titleLayout.error = "El titulo ya fue registrado"
             validated = false
         }else{

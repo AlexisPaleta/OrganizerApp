@@ -12,9 +12,10 @@
         android:padding="24dp">
 
         <TextView
+            android:id="@+id/dialogTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Agregar nueva tarea"
+            android:text="Agregar Nueva Tarea"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp"/>

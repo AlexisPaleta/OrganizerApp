@@ -7,8 +7,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -107,7 +105,7 @@ class TeachersFragment : Fragment() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                Toast.makeText(requireContext(), direction.toString(), Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), direction.toString(), Toast.LENGTH_SHORT).show()
                 val position = viewHolder.adapterPosition
 
                 when (direction){
@@ -176,13 +174,25 @@ class TeachersFragment : Fragment() {
         val decoration = DividerItemDecoration(requireContext(), llmanager.orientation)
         val recyclerView = binding.recyclerTeachers
 
+        checkIfEmpty()
+
         recyclerView.layoutManager = llmanager
         recyclerView.adapter = adapter
         binding.recyclerTeachers.addItemDecoration(decoration)
     }
 
+    private fun checkIfEmpty() {
+        if (teacherMutableList.isEmpty()) {
+            binding.recyclerTeachers.visibility = View.GONE
+            binding.emptyView.visibility = View.VISIBLE
+        } else {
+            binding.recyclerTeachers.visibility = View.VISIBLE
+            binding.emptyView.visibility = View.GONE
+        }
+    }
+
     private fun onItemSelected(teacher: Teacher){
-        Toast.makeText(requireContext(), teacher.position.toString(), Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), teacher.position.toString(), Toast.LENGTH_SHORT).show()
 
         val dialogBinding = DialogTeacherSelectedBinding.inflate(layoutInflater)
 
@@ -206,6 +216,7 @@ class TeachersFragment : Fragment() {
 
     private fun onDeletedItem(position: Int){
         teacherMutableList.removeAt(position)
+        checkIfEmpty()
         db.deleteTeacher(position)
         adapter.notifyItemRemoved(position)
         reorderTeachersPositions()
@@ -220,15 +231,18 @@ class TeachersFragment : Fragment() {
 
     private fun addTeacher(teacher: Teacher) {
         teacherMutableList.add(teacher)
+        checkIfEmpty()
         db.insertTeacher(teacher)
+
         adapter.notifyItemInserted(teacherMutableList.size - 1)
         llmanager.scrollToPositionWithOffset(teacherMutableList.size - 1, 10)
 
-        Toast.makeText(requireContext(), "${teacher.name} agregado", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "${teacher.name} agregado", Toast.LENGTH_SHORT).show()
     }
 
     private fun restoreTeacher(position: Int, teacher: Teacher){
         teacherMutableList.add(position, teacher)
+        checkIfEmpty()
         db.insertTeacher(teacher)
         adapter.notifyItemInserted(position)
 
@@ -263,7 +277,7 @@ class TeachersFragment : Fragment() {
     }
 
     private fun editFunction(position: Int){
-        Toast.makeText(requireContext(), "Edit Function", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "Edit Function", Toast.LENGTH_SHORT).show()
         adapter.notifyItemChanged(position)
         binding.recyclerTeachers.post { //This is to fix when a teacher is restored because if the item is not reDrawn, the item will
             //be an empty card

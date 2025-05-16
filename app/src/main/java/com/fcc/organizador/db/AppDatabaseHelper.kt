@@ -15,7 +15,7 @@ class AppDatabaseHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
 
     companion object{
         private const val DATABASE_NAME = "organizer_app.db"
-        private const val DATABASE_VERSION = 5
+        private const val DATABASE_VERSION = 6
 
 
         //TABLE: TEACHER

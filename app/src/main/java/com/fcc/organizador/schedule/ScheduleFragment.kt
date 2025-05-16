@@ -91,7 +91,7 @@ class ScheduleFragment : Fragment() {
         var newPosition = startPosition
 
         for (i in 1..columnsCount){
-            cellSchedule = Schedule("Click para editar", Color.argb(160,78, 215, 241), newPosition)
+            cellSchedule = Schedule("Presiona para editar", Color.argb(255,249, 231, 151), newPosition)
             scheduleMutableList.add(cellSchedule)
             db.insertScheduleCell(cellSchedule)
             newPosition++
@@ -103,7 +103,7 @@ class ScheduleFragment : Fragment() {
         val columnsCount = scheduleViewModel.getColumnsCount()
 
         if (scheduleMutableList.size <= columnsCount){
-            Toast.makeText(requireContext(), "To small list", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "No se puede eliminar la primera fila", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -118,7 +118,7 @@ class ScheduleFragment : Fragment() {
     }
 
     private fun onItemSelected(schedule: Schedule){
-        Toast.makeText(requireContext(), schedule.toString(), Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), schedule.toString(), Toast.LENGTH_SHORT).show()
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_config_schedule, null)
         val editText = dialogView.findViewById<EditText>(R.id.editTextActivity)
@@ -128,7 +128,7 @@ class ScheduleFragment : Fragment() {
         val btnCancel= dialogView.findViewById<Button>(R.id.btnClose)
 
         var selectedColor: Int = schedule.color //initial color
-        if (schedule.content == "Click para editar"){
+        if (schedule.content == "Presiona para editar"){
             editText.setText("")
         }else{
             editText.setText(schedule.content)
@@ -138,13 +138,13 @@ class ScheduleFragment : Fragment() {
 
         btnPickColor.setOnClickListener {
             ColorPickerDialog.Builder(requireContext())
-                .setTitle("Select a color")
+                .setTitle("Selecciona un color")
                 .setPreferenceName("ColorPickerDialog")
-                .setPositiveButton("Accept", ColorEnvelopeListener { envelope, _ ->
+                .setPositiveButton("Aceptar", ColorEnvelopeListener { envelope, _ ->
                     selectedColor = envelope.color
                     viewColor.setBackgroundColor(selectedColor)
                 })
-                .setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.dismiss() }
+                .setNegativeButton("Cancelar") { dialogInterface, _ -> dialogInterface.dismiss() }
                 .attachAlphaSlideBar(true) //
                 .attachBrightnessSlideBar(true)
                 .show()

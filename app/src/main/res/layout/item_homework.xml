@@ -17,14 +17,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            android:background="#ffb900">
+            android:background="#E9D985">
 
             <ImageButton
                 android:id="@+id/icEdit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_edit"
-                android:background="#ffb900"
+                android:background="#E9D985"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"/>
 

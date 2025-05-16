@@ -102,7 +102,7 @@ class HomeworkFragment : Fragment() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                Toast.makeText(requireContext(), direction.toString(), Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), direction.toString(), Toast.LENGTH_SHORT).show()
                 val position = viewHolder.adapterPosition
 
                 when (direction){
@@ -167,13 +167,25 @@ class HomeworkFragment : Fragment() {
         val decoration = DividerItemDecoration(requireContext(), llmanager.orientation)
         val recyclerView = binding.recyclerHomework
 
+        checkIfEmpty()
+
         recyclerView.layoutManager = llmanager
         recyclerView.adapter = adapter
         binding.recyclerHomework.addItemDecoration(decoration)
     }
 
+    private fun checkIfEmpty() {
+        if (homeworkMutableList.isEmpty()) {
+            binding.recyclerHomework.visibility = View.GONE
+            binding.emptyView.visibility = View.VISIBLE
+        } else {
+            binding.recyclerHomework.visibility = View.VISIBLE
+            binding.emptyView.visibility = View.GONE
+        }
+    }
+
     private fun onItemSelected(homework: Homework){
-        Toast.makeText(requireContext(), homework.title + " " + homework.id, Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), homework.title + " " + homework.id, Toast.LENGTH_SHORT).show()
 
         val dialogBinding = DialogHomeworkSelectedBinding.inflate(layoutInflater)
 
@@ -196,6 +208,7 @@ class HomeworkFragment : Fragment() {
 
     private fun onDeletedItem(position: Int, id: Int){
         homeworkMutableList.removeAt(position)
+        checkIfEmpty()
         db.deleteHomework(id)
         adapter.notifyItemRemoved(position)
     }
@@ -212,6 +225,8 @@ class HomeworkFragment : Fragment() {
 
         db.insertHomework(homework)
 
+        checkIfEmpty()
+
         adapter.notifyItemInserted(homeworkMutableList.size - 1)
         llmanager.scrollToPositionWithOffset(homeworkMutableList.size - 1, 10)
 
@@ -219,7 +234,7 @@ class HomeworkFragment : Fragment() {
 
         scheduleExactNotification(requireContext(), homework)
 
-        Toast.makeText(requireContext(), "${homework.title} agregado", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "${homework.title} agregado", Toast.LENGTH_SHORT).show()
     }
 
     private fun restoreHomework(position: Int, homework: Homework){
@@ -227,6 +242,8 @@ class HomeworkFragment : Fragment() {
 
         val id = db.insertHomework(homework)
         homework.id = id //the is reassigned by database
+
+        checkIfEmpty()
 
         adapter.notifyItemInserted(position)
 
@@ -249,7 +266,7 @@ class HomeworkFragment : Fragment() {
         cancelNotification(requireContext(), deletedHomework.id)
 
         onDeletedItem(position, deletedHomework.id)
-        val snackbar = Snackbar.make(binding.root, "Maestro eliminado", Snackbar.LENGTH_LONG)
+        val snackbar = Snackbar.make(binding.root, "Tarea eliminada", Snackbar.LENGTH_LONG)
         snackbar.setAction("Deshacer") {
             restoreHomework(position, deletedHomework)
         }
@@ -258,7 +275,7 @@ class HomeworkFragment : Fragment() {
     }
 
     private fun editFunction(position: Int){
-        Toast.makeText(requireContext(), "Edit Function", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "Edit Function", Toast.LENGTH_SHORT).show()
         adapter.notifyItemChanged(position)
         binding.recyclerHomework.post { //This is to fix when a teacher is restored because if the item is not reDrawn, the item will
             //be an empty card
