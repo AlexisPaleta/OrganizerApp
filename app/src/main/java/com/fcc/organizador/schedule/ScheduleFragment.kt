@@ -1,5 +1,6 @@
 package com.fcc.organizador.schedule
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,18 +22,11 @@ import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.skydoves.colorpickerview.ColorPickerDialog
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ScheduleFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ScheduleFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+
     private var param1: String? = null
     private var param2: String? = null
     private var _binding: FragmentScheduleBinding? = null
@@ -49,13 +44,12 @@ class ScheduleFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         scheduleViewModel = ViewModelProvider(requireActivity())[ScheduleViewModel::class.java]
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentScheduleBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -64,34 +58,32 @@ class ScheduleFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         db = AppDatabaseHelper(requireContext())
-        scheduleMutableList = db.getAllScheduleCells() //Initialize schedule mutable list
+        scheduleMutableList = db.getAllScheduleCells()
 
-        glmanager = GridLayoutManager(requireContext(),scheduleViewModel.getColumnsCount())
+        glmanager = GridLayoutManager(requireContext(), scheduleViewModel.getColumnsCount())
         initRecyclerView()
+
         binding.btnAddRow.setOnClickListener { addRowSection() }
         binding.btnDeleteRow.setOnClickListener { deleteRowSection() }
+        binding.btnExportPdf.setOnClickListener { exportToPdf() }
     }
 
-    private fun initRecyclerView(){
+    private fun initRecyclerView() {
         adapter = ScheduleAdapter(
             scheduleList = scheduleMutableList,
             onClickListener = { schedule -> onItemSelected(schedule) }
         )
-
-        val recyclerView = binding.recyclerSchedule
-
-        recyclerView.layoutManager = glmanager
-        recyclerView.adapter = adapter
+        binding.recyclerSchedule.layoutManager = glmanager
+        binding.recyclerSchedule.adapter = adapter
     }
 
-    private fun addRowSection(){
+    private fun addRowSection() {
         val columnsCount = scheduleViewModel.getColumnsCount()
         val startPosition = scheduleMutableList.size
-        var cellSchedule: Schedule
         var newPosition = startPosition
 
-        for (i in 1..columnsCount){
-            cellSchedule = Schedule("Presiona para editar", Color.argb(255,249, 231, 151), newPosition)
+        for (a in 1..columnsCount) {
+            val cellSchedule = Schedule("Presiona para editar", Color.argb(255, 249, 231, 151), newPosition)
             scheduleMutableList.add(cellSchedule)
             db.insertScheduleCell(cellSchedule)
             newPosition++
@@ -99,55 +91,93 @@ class ScheduleFragment : Fragment() {
         adapter.notifyItemRangeInserted(startPosition, columnsCount)
     }
 
-    private fun deleteRowSection(){
+    private fun deleteRowSection() {
         val columnsCount = scheduleViewModel.getColumnsCount()
 
-        if (scheduleMutableList.size <= columnsCount){
+        if (scheduleMutableList.size <= columnsCount) {
             Toast.makeText(requireContext(), "No se puede eliminar la primera fila", Toast.LENGTH_SHORT).show()
             return
         }
 
         val rangePositions = scheduleMutableList.size - columnsCount
-        for (i in 1..columnsCount){
+        for (a in 1..columnsCount) {
             val removingPosition = scheduleMutableList.size - 1
             scheduleMutableList.removeAt(removingPosition)
             db.deleteScheduleCell(removingPosition)
         }
         adapter.notifyItemRangeRemoved(rangePositions, columnsCount)
-
     }
 
-    private fun onItemSelected(schedule: Schedule){
-        //Toast.makeText(requireContext(), schedule.toString(), Toast.LENGTH_SHORT).show()
+    private fun exportToPdf() {
+        if (scheduleMutableList.isEmpty()) {
+            Toast.makeText(requireContext(), "El horario está vacío", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        val pdfFile = SchedulePdfExporter.export(
+            context = requireContext(),
+            scheduleList = scheduleMutableList,
+            columnsCount = scheduleViewModel.getColumnsCount()
+        )
+
+        if (pdfFile == null) {
+            Toast.makeText(requireContext(), "Error al generar el PDF", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Toast.makeText(requireContext(), "PDF generado correctamente", Toast.LENGTH_SHORT).show()
+
+        try {
+            val uri = FileProvider.getUriForFile(
+                requireContext(),
+                "${requireContext().packageName}.fileprovider",
+                pdfFile
+            )
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/pdf")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            }
+            startActivity(Intent.createChooser(intent, "Abrir PDF con..."))
+        } catch (_: Exception) {
+            Toast.makeText(
+                requireContext(),
+                "No se encontró una app para abrir PDF. Archivo guardado en caché.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun onItemSelected(schedule: Schedule) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_config_schedule, null)
         val editText = dialogView.findViewById<EditText>(R.id.editTextActivity)
         val viewColor = dialogView.findViewById<View>(R.id.viewColorPreview)
         val btnPickColor = dialogView.findViewById<Button>(R.id.btnPickColor)
         val btnAccept = dialogView.findViewById<Button>(R.id.btnAccept)
-        val btnCancel= dialogView.findViewById<Button>(R.id.btnClose)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnClose)
 
-        var selectedColor: Int = schedule.color //initial color
-        if (schedule.content == "Presiona para editar"){
-            editText.setText("")
-        }else{
-            editText.setText(schedule.content)
-        }
+        var selectedColor: Int = schedule.color.asOpaqueColor()
 
+        editText.setText(
+            if (schedule.content == "Presiona para editar") "" else schedule.content
+        )
         viewColor.setBackgroundColor(selectedColor)
 
         btnPickColor.setOnClickListener {
-            ColorPickerDialog.Builder(requireContext())
+            val builder = ColorPickerDialog.Builder(requireContext())
                 .setTitle("Selecciona un color")
-                .setPreferenceName("ColorPickerDialog")
                 .setPositiveButton("Aceptar", ColorEnvelopeListener { envelope, _ ->
-                    selectedColor = envelope.color
+                    selectedColor = envelope.color.asOpaqueColor()
                     viewColor.setBackgroundColor(selectedColor)
                 })
                 .setNegativeButton("Cancelar") { dialogInterface, _ -> dialogInterface.dismiss() }
-                .attachAlphaSlideBar(true) //
+                .attachAlphaSlideBar(false)
                 .attachBrightnessSlideBar(true)
-                .show()
+
+            // Pre-seleccionar el color actual de la celda
+            builder.getColorPickerView().setInitialColor(selectedColor)
+
+            builder.show()
         }
 
         val dialog = MaterialAlertDialogBuilder(requireContext())
@@ -157,23 +187,16 @@ class ScheduleFragment : Fragment() {
 
         btnAccept.setOnClickListener {
             var content = editText.text.toString()
-            if (content == ""){
-                content = "Presiona para editar"
-            }
+            if (content.isEmpty()) content = "Presiona para editar"
             schedule.content = content
-            schedule.color = selectedColor
-            val updatedSchedule = Schedule(content, selectedColor, schedule.position)
-            db.updateScheduleCell(updatedSchedule)
+            schedule.color = selectedColor.asOpaqueColor()
+            db.updateScheduleCell(Schedule(content, schedule.color, schedule.position))
             adapter.notifyItemChanged(schedule.position)
             dialog.dismiss()
         }
 
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
+        btnCancel.setOnClickListener { dialog.dismiss() }
         dialog.show()
-
     }
 
     override fun onDestroyView() {
@@ -182,16 +205,8 @@ class ScheduleFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ScheduleFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
+        @Suppress("unused")
         fun newInstance(param1: String, param2: String) =
             ScheduleFragment().apply {
                 arguments = Bundle().apply {
@@ -200,4 +215,6 @@ class ScheduleFragment : Fragment() {
                 }
             }
     }
+
+    private fun Int.asOpaqueColor(): Int = this or 0xFF000000.toInt()
 }

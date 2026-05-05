@@ -145,6 +145,7 @@
         android:id="@+id/DashboardMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:text="Bottom text"
         android:textSize="18sp"
         android:textStyle="normal"

@@ -60,42 +60,119 @@
                 android:autofillHints=""/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Agregar después de los TextInputLayout -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/datePickerLayout"
+        <!-- Sección fecha y hora en una fila -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:errorEnabled="true"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            android:text="Fecha y hora de entrega"
+            android:textSize="13sp"
+            android:textColor="?attr/colorPrimary"
+            android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/textViewDate"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:text="Seleccionar fecha"
-                android:textColor="@android:color/black"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/timePickerLayout"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:errorEnabled="true"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+
+            <!-- Botón fecha -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginEnd="6dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/textViewDate"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Fecha"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorOnSurface"
+                    app:icon="@drawable/ic_calendar"
+                    app:iconGravity="textStart"
+                    app:iconTint="?attr/colorPrimary"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="?attr/colorOutline"
+                    app:strokeWidth="1dp"/>
+
+                <TextView
+                    android:id="@+id/errorDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="11sp"
+                    android:textColor="?attr/colorError"
+                    android:paddingStart="4dp"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <!-- Botón hora -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="6dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/textViewTime"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Hora"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorOnSurface"
+                    app:icon="@drawable/ic_time"
+                    app:iconGravity="textStart"
+                    app:iconTint="?attr/colorPrimary"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="?attr/colorOutline"
+                    app:strokeWidth="1dp"/>
+
+                <TextView
+                    android:id="@+id/errorTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="11sp"
+                    android:textColor="?attr/colorError"
+                    android:paddingStart="4dp"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Resumen de fecha+hora seleccionada -->
+        <LinearLayout
+            android:id="@+id/layoutDateTimeSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_datetime_summary"
+            android:padding="12dp"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_calendar"
+                app:tint="?attr/colorPrimary"
+                android:layout_marginEnd="8dp"/>
 
             <TextView
-                android:id="@+id/textViewTime"
+                android:id="@+id/textDateTimeSummary"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:text="Seleccionar hora"
-                android:textColor="@android:color/black"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="?attr/colorOnSurface"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

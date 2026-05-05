@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     3 -> {
                         tab.text = "Logros"
-                        tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_time)
+                        tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_trophy)
                     }
                 }
             }.attach()

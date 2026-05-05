@@ -15,7 +15,7 @@ class AppDatabaseHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
 
     companion object{
         private const val DATABASE_NAME = "organizer_app.db"
-        private const val DATABASE_VERSION = 7
+        private const val DATABASE_VERSION = 8
 
 
         //TABLE: TEACHER
@@ -246,7 +246,7 @@ class AppDatabaseHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NA
     fun deleteHomework(id: Int){
         val db = writableDatabase
         try {
-            db.delete(TABLE_HOMEWORK, "$COL_HOMEWORK_ID = $id", null)
+            db.delete(TABLE_HOMEWORK, "$COL_HOMEWORK_ID = ?", arrayOf(id.toString()))
         } finally {
             db.close()
         }

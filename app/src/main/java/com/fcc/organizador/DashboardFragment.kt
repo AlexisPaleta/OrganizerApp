@@ -75,7 +75,7 @@ class DashboardFragment : Fragment() {
         }
 
         if ((pendingCount == 0) and (overdueCount == 0)){
-            "No hay ninguno trabajo pendiente. Buen trabajo".also { binding.DashboardMessage.text = it }
+            "No hay ninguno trabajo pendiente. Sigue asi".also { binding.DashboardMessage.text = it }
         }
         else{
             if (pendingCount < completedCount){
@@ -83,7 +83,7 @@ class DashboardFragment : Fragment() {
 
             } else{
                 if (overdueCount < 0){
-                    "Tienes $pendingCount tareas pendientes. No olvides completar tus pendientes".also { binding.DashboardMessage.text = it }
+                    "Tienes $pendingCount tareas pendientes. No olvides completar tus actividades".also { binding.DashboardMessage.text = it }
                 }
                 else{
                     "Tienes $pendingCount tareas pendientes y $overdueCount tareas atrasadas. ¡Debes esforzarte más!".also { binding.DashboardMessage.text = it }
