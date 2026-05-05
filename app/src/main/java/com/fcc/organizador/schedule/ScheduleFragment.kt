@@ -158,7 +158,7 @@ class ScheduleFragment : Fragment() {
         btnAccept.setOnClickListener {
             var content = editText.text.toString()
             if (content == ""){
-                content = "Click para editar"
+                content = "Presiona para editar"
             }
             schedule.content = content
             schedule.color = selectedColor
